@@ -1,5 +1,5 @@
 // API Service para integração com backend Air Sentinel
-const API_BASE_URL = 'http://localhost:3001/api';
+const API_BASE_URL = 'http://localhost:5000/api';
 
 class ApiService {
   // Método auxiliar para fazer requisições HTTP
@@ -24,133 +24,118 @@ class ApiService {
     }
   }
 
-  // ===== ENDPOINTS NASA EARTHDATA (MERRA-2) =====
+  // ===== ENDPOINTS DE SAÚDE =====
   
-  async getNasaHealth() {
-    return this.makeRequest('/nasa/health');
+  async getHealth() {
+    return this.makeRequest('/health');
   }
 
-  async getNasaData(params = {}) {
-    const queryString = new URLSearchParams(params).toString();
-    return this.makeRequest(`/nasa/data?${queryString}`);
+  async getDetailedHealth() {
+    return this.makeRequest('/health/detailed');
   }
 
-  async getNasaVariables() {
-    return this.makeRequest('/nasa/variables');
-  }
-
-  async getNasaStats() {
-    return this.makeRequest('/nasa/stats');
-  }
-
-  // ===== ENDPOINTS TEMPO NO2 =====
+  // ===== ENDPOINTS DE CO2 =====
   
-  async getTempoHealth() {
-    return this.makeRequest('/tempo/health');
-  }
-
-  async getTempoNO2Data(params = {}) {
+  async getCO2Data(params = {}) {
     const queryString = new URLSearchParams(params).toString();
-    return this.makeRequest(`/tempo/no2?${queryString}`);
+    return this.makeRequest(`/co2_data?${queryString}`);
   }
 
-  async getTempoDatasetInfo() {
-    return this.makeRequest('/tempo/dataset-info');
+  async getCO2Info() {
+    return this.makeRequest('/co2_info');
   }
 
-  async getTempoExampleData() {
-    return this.makeRequest('/tempo/example-data');
-  }
-
-  async getTempoExampleLocations() {
-    return this.makeRequest('/tempo/example-locations');
+  async getCO2Stats() {
+    return this.makeRequest('/co2_stats');
   }
 
   // ===== MÉTODOS UTILITÁRIOS =====
 
-  // Obter dados de NO2 para uma localização específica
-  async getNO2ForLocation(lat, lon, startDate = null, endDate = null) {
+  // Obter dados de CO2 para uma localização específica
+  async getCO2ForLocation(lat, lon, location = null) {
     const params = { lat, lon };
-    
-    if (startDate) params.startDate = startDate;
-    if (endDate) params.endDate = endDate;
-
-    return this.getTempoNO2Data(params);
+    if (location) params.location = location;
+    return this.getCO2Data(params);
   }
 
-  // Obter dados de exemplo para Nova York
-  async getNewYorkNO2Data() {
-    return this.getTempoExampleData();
+  // Método para obter localizações de exemplo (usado pelo LocationSelector)
+  async getTempoExampleLocations() {
+    // Retorna localizações de exemplo para o seletor
+    return [
+      { lat: -23.5505, lon: -46.6333, name: 'São Paulo, SP' },
+      { lat: -22.9068, lon: -43.1729, name: 'Rio de Janeiro, RJ' },
+      { lat: -19.9167, lon: -43.9345, name: 'Belo Horizonte, MG' },
+      { lat: -25.4284, lon: -49.2733, name: 'Curitiba, PR' },
+      { lat: -30.0346, lon: -51.2177, name: 'Porto Alegre, RS' },
+      { lat: -8.0476, lon: -34.8770, name: 'Recife, PE' },
+      { lat: -12.9714, lon: -38.5014, name: 'Salvador, BA' },
+      { lat: -3.7319, lon: -38.5267, name: 'Fortaleza, CE' }
+    ];
   }
 
-  // Verificar status de ambos os serviços
+  // Método para verificar saúde (usado pelo Dashboard)
+  async getHealthCheck() {
+    return this.getHealth();
+  }
+
+  // Verificar status dos serviços
   async getServicesHealth() {
     try {
-      const [nasaHealth, tempoHealth] = await Promise.allSettled([
-        this.getNasaHealth(),
-        this.getTempoHealth()
-      ]);
-
+      const health = await this.getHealth();
       return {
-        nasa: {
-          status: nasaHealth.status === 'fulfilled' ? 'healthy' : 'unhealthy',
-          data: nasaHealth.status === 'fulfilled' ? nasaHealth.value : null,
-          error: nasaHealth.status === 'rejected' ? nasaHealth.reason.message : null
-        },
-        tempo: {
-          status: tempoHealth.status === 'fulfilled' ? 'healthy' : 'unhealthy',
-          data: tempoHealth.status === 'fulfilled' ? tempoHealth.value : null,
-          error: tempoHealth.status === 'rejected' ? tempoHealth.reason.message : null
+        api: {
+          status: 'healthy',
+          data: health,
+          error: null
         }
       };
     } catch (error) {
       console.error('Error checking services health:', error);
-      throw error;
+      return {
+        api: {
+          status: 'unhealthy',
+          data: null,
+          error: error.message
+        }
+      };
     }
   }
 
-  // Converter dados NO2 para formato do dashboard
-  formatNO2DataForDashboard(tempoData) {
-    if (!tempoData || !tempoData.success || !tempoData.data) {
+  // Converter dados CO2 para formato do dashboard
+  formatCO2DataForDashboard(co2Data) {
+    if (!co2Data || !co2Data.value) {
       return null;
     }
 
-    const { data } = tempoData;
-    const no2Values = data.no2Data?.values || [];
-    const statistics = data.no2Data?.statistics || {};
-
     return {
-      location: data.location?.description || `${data.location?.lat}, ${data.location?.lon}`,
-      no2: {
-        current: statistics.mean || no2Values[no2Values.length - 1] || 0,
-        min: statistics.min || 0,
-        max: statistics.max || 0,
-        average: statistics.mean || 0,
-        unit: data.no2Data?.units || 'molecules/cm²',
-        quality: data.no2Data?.quality || 'unknown',
-        values: no2Values
+      location: co2Data.location || 'Localização não especificada',
+      co2: {
+        current: co2Data.value,
+        unit: co2Data.units || 'ppm',
+        quality: co2Data.quality || 'unknown',
+        interpretation: co2Data.context?.interpretation || null
       },
       metadata: {
-        instrument: data.metadata?.instrument || 'TEMPO',
-        resolution: data.metadata?.resolution || '2.1km x 4.4km',
-        timeRange: data.timeRange || {},
-        lastUpdated: new Date().toLocaleString('pt-BR')
-      }
+        source: co2Data.source || 'NASA/MERRA-2',
+        dataset: co2Data.metadata?.dataset || 'MERRA-2_CO2_Simulation',
+        resolution: co2Data.metadata?.spatial_resolution || '0.5° x 0.625°',
+        lastUpdated: co2Data.timestamp ? new Date(co2Data.timestamp).toLocaleString('pt-BR') : new Date().toLocaleString('pt-BR')
+      },
+      recommendations: co2Data.context?.recommendations || []
     };
   }
 
-  // Calcular AQI baseado em NO2 (simplificado)
-  calculateNO2AQI(no2Value) {
-    // Conversão simplificada de molecules/cm² para µg/m³ (aproximada)
-    // Valores de referência para NO2 em µg/m³
-    const no2_ugm3 = no2Value * 0.0019; // Conversão aproximada
-    
-    if (no2_ugm3 <= 40) return { aqi: Math.round(no2_ugm3 * 1.25), status: 'good' };
-    if (no2_ugm3 <= 80) return { aqi: Math.round(50 + (no2_ugm3 - 40) * 1.25), status: 'moderate' };
-    if (no2_ugm3 <= 180) return { aqi: Math.round(100 + (no2_ugm3 - 80) * 0.5), status: 'unhealthy-sensitive' };
-    if (no2_ugm3 <= 280) return { aqi: Math.round(150 + (no2_ugm3 - 180) * 0.5), status: 'unhealthy' };
-    if (no2_ugm3 <= 400) return { aqi: Math.round(200 + (no2_ugm3 - 280) * 0.83), status: 'very-unhealthy' };
-    return { aqi: Math.min(500, Math.round(300 + (no2_ugm3 - 400) * 0.5)), status: 'hazardous' };
+  // Calcular status baseado em CO2
+  calculateCO2Status(co2Value) {
+    if (co2Value < 400) {
+      return { status: 'good', color: '#4CAF50', description: 'Baixo', aqi: 50, label: 'Bom' };
+    } else if (co2Value < 420) {
+      return { status: 'normal', color: '#2196F3', description: 'Normal', aqi: 100, label: 'Moderado' };
+    } else if (co2Value < 440) {
+      return { status: 'elevated', color: '#FF9800', description: 'Elevado', aqi: 150, label: 'Insalubre para Grupos Sensíveis' };
+    } else {
+      return { status: 'high', color: '#F44336', description: 'Muito Elevado', aqi: 200, label: 'Insalubre' };
+    }
   }
 }
 

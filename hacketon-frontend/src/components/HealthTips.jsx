@@ -1,10 +1,35 @@
-import React, { useState } from 'react';
-import { Heart, Shield, Activity, Zap, Users, Baby, User, UserCheck, AlertTriangle, CheckCircle, Info, Wind, Sun, Droplets, Thermometer } from 'lucide-react';
-import './HealthTips.css';
+import React, { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
+import { 
+  Heart, 
+  Shield, 
+  AlertTriangle, 
+  CheckCircle, 
+  X, 
+  Home, 
+  Car, 
+  Wind, 
+  Sun, 
+  Clock, 
+  Users, 
+  Baby, 
+  Activity,
+  Thermometer,
+  Droplets,
+  Eye,
+  Brain,
+  BellOff
+} from 'lucide-react';
 
 const HealthTips = () => {
+  const [searchParams] = useSearchParams();
+  const aqiParam = searchParams.get('aqi');
+  const locationParam = searchParams.get('location');
+  
+  const [currentAQI, setCurrentAQI] = useState(parseInt(aqiParam) || 85);
   const [selectedCategory, setSelectedCategory] = useState('general');
-  const [currentAQI] = useState(85); // Simulando AQI atual
+  const [loading, setLoading] = useState(true);
+  const [personalizedTips, setPersonalizedTips] = useState([]);
 
   const getAQIStatus = (aqi) => {
     if (aqi <= 50) return { label: 'Bom', color: '#4CAF50', level: 'good' };
@@ -20,7 +45,7 @@ const HealthTips = () => {
   const categories = [
     { id: 'general', name: 'Geral', icon: Heart },
     { id: 'children', name: 'Crianças', icon: Baby },
-    { id: 'elderly', name: 'Idosos', icon: User },
+    { id: 'elderly', name: 'Idosos', icon: Users },
     { id: 'athletes', name: 'Atletas', icon: Activity },
     { id: 'respiratory', name: 'Problemas Respiratórios', icon: Wind },
     { id: 'cardiovascular', name: 'Problemas Cardíacos', icon: Heart }

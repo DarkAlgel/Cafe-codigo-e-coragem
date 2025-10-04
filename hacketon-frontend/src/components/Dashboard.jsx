@@ -1,20 +1,27 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { 
-  Thermometer, 
-  Droplets, 
+  MapPin, 
   Wind, 
   Eye, 
-  AlertTriangle,
-  CheckCircle,
-  XCircle,
-  RefreshCw,
-  MapPin
+  Thermometer, 
+  Droplets, 
+  Sun, 
+  AlertTriangle, 
+  TrendingUp, 
+  Activity, 
+  Shield, 
+  Clock,
+  Navigation,
+  BarChart3,
+  Settings,
+  RefreshCw
 } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import apiService from '../services/apiService';
 import LocationSelector from './LocationSelector';
 import HistoricalChart from './HistoricalChart';
 import DatasetInfo from './DatasetInfo';
+import apiService from '../services/apiService';
 import './Dashboard.css';
 
 const Dashboard = () => {
@@ -29,7 +36,8 @@ const Dashboard = () => {
       o3: 120,
       no2: 25,
       so2: 15,
-      co: 8
+      co: 8,
+      co2: 420
     },
     weather: {
       temperature: 24,
@@ -39,11 +47,11 @@ const Dashboard = () => {
     }
   });
 
-  const [tempoData, setTempoData] = useState(null);
+  const [co2Data, setCo2Data] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [servicesHealth, setServicesHealth] = useState(null);
-  const [selectedLocation, setSelectedLocation] = useState({ lat: 40.7128, lon: -74.0060, name: 'Nova York, NY' });
+  const [selectedLocation, setSelectedLocation] = useState({ lat: -23.5505, lon: -46.6333, name: 'São Paulo, SP' });
 
   // Carregar dados iniciais
   useEffect(() => {
@@ -54,30 +62,35 @@ const Dashboard = () => {
   // Carregar dados quando a localização mudar
   useEffect(() => {
     if (selectedLocation.lat && selectedLocation.lon) {
-      loadTempoData();
+      loadCo2Data();
     }
   }, [selectedLocation]);
 
   const loadInitialData = async () => {
     try {
-      // Carregar dados de exemplo do TEMPO
-      const exampleData = await apiService.getTempoExampleData();
-      if (exampleData.success) {
-        const formattedData = apiService.formatNO2DataForDashboard(exampleData);
-        setTempoData(formattedData);
+      // Carregar dados de CO2 com parâmetros da localização selecionada
+      const co2Response = await apiService.getCO2Data({
+        lat: selectedLocation.lat,
+        lon: selectedLocation.lon,
+        location: selectedLocation.name
+      });
+      
+      if (co2Response.success) {
+        const formattedData = apiService.formatCO2DataForDashboard(co2Response.data);
+        setCo2Data(formattedData);
         
         // Atualizar dados de qualidade do ar com dados reais
         if (formattedData) {
-          const aqiData = apiService.calculateNO2AQI(formattedData.no2.current);
+          const co2Status = apiService.calculateCO2Status(formattedData.co2.current);
           setAirQualityData(prev => ({
             ...prev,
-            aqi: aqiData.aqi,
-            status: aqiData.status,
+            aqi: co2Status.aqi,
+            status: co2Status.status,
             location: formattedData.location,
             lastUpdated: formattedData.metadata.lastUpdated,
             pollutants: {
               ...prev.pollutants,
-              no2: Math.round(formattedData.no2.current * 0.0019) // Conversão aproximada
+              co2: Math.round(formattedData.co2.current)
             }
           }));
         }
@@ -88,41 +101,41 @@ const Dashboard = () => {
     }
   };
 
-  const loadTempoData = async () => {
+  const loadCo2Data = async () => {
     setLoading(true);
     setError(null);
     
     try {
-      const data = await apiService.getNO2ForLocation(
-        selectedLocation.lat, 
-        selectedLocation.lon,
-        new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], // 7 dias atrás
-        new Date().toISOString().split('T')[0] // hoje
-      );
+      const data = await apiService.getCO2Data({
+        lat: selectedLocation.lat,
+        lon: selectedLocation.lon,
+        start_date: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+        end_date: new Date().toISOString().split('T')[0]
+      });
       
       if (data.success) {
-        const formattedData = apiService.formatNO2DataForDashboard(data);
-        setTempoData(formattedData);
+        const formattedData = apiService.formatCO2DataForDashboard(data);
+        setCo2Data(formattedData);
         
-        // Atualizar AQI baseado nos dados reais
+        // Atualizar status baseado nos dados reais
         if (formattedData) {
-          const aqiData = apiService.calculateNO2AQI(formattedData.no2.current);
+          const co2Status = apiService.calculateCO2Status(formattedData.co2.current);
           setAirQualityData(prev => ({
             ...prev,
-            aqi: aqiData.aqi,
-            status: aqiData.status,
+            aqi: co2Status.aqi,
+            status: co2Status.status,
             location: selectedLocation.name,
             lastUpdated: formattedData.metadata.lastUpdated,
             pollutants: {
               ...prev.pollutants,
-              no2: Math.round(formattedData.no2.current * 0.0019)
+              co2: Math.round(formattedData.co2.current)
             }
           }));
         }
       }
     } catch (err) {
-      console.error('Error loading TEMPO data:', err);
-      setError('Erro ao carregar dados TEMPO NO2');
+      console.error('Error loading CO2 data:', err);
+      setError('Erro ao carregar dados de CO2');
     } finally {
       setLoading(false);
     }
@@ -130,7 +143,7 @@ const Dashboard = () => {
 
   const checkServicesHealth = async () => {
     try {
-      const health = await apiService.getServicesHealth();
+      const health = await apiService.getHealthCheck();
       setServicesHealth(health);
     } catch (err) {
       console.error('Error checking services health:', err);
@@ -142,7 +155,7 @@ const Dashboard = () => {
   };
 
   const handleRefresh = () => {
-    loadTempoData();
+    loadCo2Data();
     checkServicesHealth();
   };
 
@@ -158,10 +171,10 @@ const Dashboard = () => {
   const pollutantData = [
     { name: 'PM2.5', value: airQualityData.pollutants.pm25, limit: 25, unit: 'µg/m³' },
     { name: 'PM10', value: airQualityData.pollutants.pm10, limit: 50, unit: 'µg/m³' },
-    { name: 'O₃', value: airQualityData.pollutants.o3, limit: 100, unit: 'µg/m³' },
-    { name: 'NO₂', value: airQualityData.pollutants.no2, limit: 40, unit: 'µg/m³' },
-    { name: 'SO₂', value: airQualityData.pollutants.so2, limit: 20, unit: 'µg/m³' },
-    { name: 'CO', value: airQualityData.pollutants.co, limit: 10, unit: 'mg/m³' }
+    { name: 'O3', value: airQualityData.pollutants.o3, limit: 100, unit: 'µg/m³' },
+    { name: 'NO2', value: airQualityData.pollutants.no2, limit: 40, unit: 'µg/m³' },
+    { name: 'SO2', value: airQualityData.pollutants.so2, limit: 20, unit: 'µg/m³' },
+    { name: 'CO2', value: airQualityData.pollutants.co2, limit: 400, unit: 'ppm' }
   ];
 
   const currentStatus = getAirQualityStatus(airQualityData.aqi);
@@ -181,7 +194,7 @@ const Dashboard = () => {
     <div className="dashboard">
       <div className="dashboard-header">
         <h1>Air Sentinel</h1>
-        <p>Real-Time Air Quality Monitoring with NASA TEMPO NO₂ Data</p>
+        <p>Real-Time Air Quality Monitoring with NASA CO₂ Data</p>
         <div className="location-controls">
           <LocationSelector 
             currentLocation={selectedLocation}
@@ -201,11 +214,8 @@ const Dashboard = () => {
         {/* Status dos Serviços */}
         {servicesHealth && (
           <div className="services-status">
-            <div className={`service-indicator ${servicesHealth.nasa.status}`}>
-              NASA MERRA-2: {servicesHealth.nasa.status}
-            </div>
-            <div className={`service-indicator ${servicesHealth.tempo.status}`}>
-              TEMPO NO₂: {servicesHealth.tempo.status}
+            <div className={`service-indicator ${servicesHealth.nasa ? servicesHealth.nasa.status : 'unknown'}`}>
+              NASA CO₂: {servicesHealth.nasa ? servicesHealth.nasa.status : 'unknown'}
             </div>
           </div>
         )}
@@ -236,11 +246,11 @@ const Dashboard = () => {
               {currentStatus.status === 'moderate' && 'Air quality is acceptable for most people. Sensitive groups may experience minor symptoms.'}
               {currentStatus.status !== 'good' && currentStatus.status !== 'moderate' && 'Air quality may be harmful to health. Consider limiting outdoor activities.'}
             </p>
-            {tempoData && (
-              <div className="tempo-info">
-                <p><strong>NO₂ TEMPO:</strong> {tempoData.no2.current.toFixed(2)} {tempoData.no2.unit}</p>
-                <p><strong>Quality:</strong> {tempoData.no2.quality}</p>
-                <p><strong>Instrument:</strong> {tempoData.metadata.instrument}</p>
+            {co2Data && (
+              <div className="co2-info">
+                <p><strong>CO₂:</strong> {co2Data.co2.current.toFixed(2)} {co2Data.co2.unit}</p>
+                <p><strong>Quality:</strong> {co2Data.co2.quality}</p>
+                <p><strong>Source:</strong> {co2Data.metadata.source}</p>
               </div>
             )}
           </div>
@@ -248,31 +258,31 @@ const Dashboard = () => {
       </div>
 
       <div className="dashboard-grid">
-        {/* TEMPO NO2 Data Card */}
-        {tempoData && (
-          <div className="card tempo-data-card">
-            <h3>NASA TEMPO NO₂ Data</h3>
-            <div className="tempo-stats">
+        {/* CO2 Data Card */}
+        {co2Data && (
+          <div className="card co2-data-card">
+            <h3>NASA CO₂ Data</h3>
+            <div className="co2-stats">
               <div className="stat-item">
                 <span className="stat-label">Current</span>
-                <span className="stat-value">{tempoData.no2.current.toFixed(2)} {tempoData.no2.unit}</span>
+                <span className="stat-value">{co2Data.co2.current.toFixed(2)} {co2Data.co2.unit}</span>
               </div>
               <div className="stat-item">
                 <span className="stat-label">Average</span>
-                <span className="stat-value">{tempoData.no2.average.toFixed(2)} {tempoData.no2.unit}</span>
+                <span className="stat-value">{co2Data.co2.average.toFixed(2)} {co2Data.co2.unit}</span>
               </div>
               <div className="stat-item">
                 <span className="stat-label">Min</span>
-                <span className="stat-value">{tempoData.no2.min.toFixed(2)} {tempoData.no2.unit}</span>
+                <span className="stat-value">{co2Data.co2.min.toFixed(2)} {co2Data.co2.unit}</span>
               </div>
               <div className="stat-item">
                 <span className="stat-label">Max</span>
-                <span className="stat-value">{tempoData.no2.max.toFixed(2)} {tempoData.no2.unit}</span>
+                <span className="stat-value">{co2Data.co2.max.toFixed(2)} {co2Data.co2.unit}</span>
               </div>
             </div>
-            <div className="tempo-metadata">
-              <p><strong>Resolution:</strong> {tempoData.metadata.resolution}</p>
-              <p><strong>Data Quality:</strong> {tempoData.no2.quality}</p>
+            <div className="co2-metadata">
+              <p><strong>Resolution:</strong> {co2Data.metadata.resolution}</p>
+              <p><strong>Data Quality:</strong> {co2Data.co2.quality}</p>
             </div>
           </div>
         )}

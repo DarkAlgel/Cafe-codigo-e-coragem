@@ -1,27 +1,11 @@
-import React, { useState, useEffect } from 'react';
-import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
-import { divIcon } from 'leaflet';
-import { MapPin, Info, Navigation } from 'lucide-react';
-import 'leaflet/dist/leaflet.css';
-import './MapView.css';
-
-// Componente para centralizar o mapa na localização do usuário
-const LocationMarker = ({ position, setPosition }) => {
-  const map = useMap();
-
-  useEffect(() => {
-    if (position) {
-      map.flyTo(position, 13);
-    }
-  }, [position, map]);
-
-  return null;
-};
+import React, { useState, useEffect, useRef } from 'react';
 
 const MapView = () => {
-  const [userPosition, setUserPosition] = useState(null);
-  const [selectedStation, setSelectedStation] = useState(null);
+  const mapRef = useRef(null);
+  const [selectedLocation, setSelectedLocation] = useState(null);
+  const [airQualityData, setAirQualityData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [mapCenter, setMapCenter] = useState({ lat: -23.5505, lng: -46.6333 }); // São Paulo
 
   // Dados simulados de estações de monitoramento
   const airQualityStations = [

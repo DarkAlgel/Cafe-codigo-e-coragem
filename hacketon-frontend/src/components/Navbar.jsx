@@ -8,7 +8,9 @@ import {
   Heart, 
   TrendingUp, 
   User,
-  Wind
+  Wind,
+  Satellite,
+  Database
 } from 'lucide-react';
 import './Navbar.css';
 
@@ -16,13 +18,11 @@ const Navbar = () => {
   const location = useLocation();
 
   const navItems = [
-    { path: '/', icon: Home, label: 'Início' },
-    { path: '/map', icon: Map, label: 'Mapa' },
-    { path: '/pollutants', icon: Activity, label: 'Poluentes' },
-    { path: '/alerts', icon: Bell, label: 'Alertas' },
-    { path: '/health', icon: Heart, label: 'Saúde' },
-    { path: '/history', icon: TrendingUp, label: 'Histórico' },
-    { path: '/profile', icon: User, label: 'Perfil' }
+    { path: '/', icon: Home, label: 'Dashboard' },
+    { path: '/co2', icon: Activity, label: 'CO2 Monitor' },
+    { path: '/nasa-data', icon: Satellite, label: 'NASA Data' },
+    { path: '/data-sources', icon: Database, label: 'Data Sources' },
+    { path: '/about', icon: User, label: 'Sobre' }
   ];
 
   return (

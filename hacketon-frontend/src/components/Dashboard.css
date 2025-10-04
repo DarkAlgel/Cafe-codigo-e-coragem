@@ -1,5 +1,5 @@
 .dashboard {
-  padding: 1rem;
+  padding: var(--space-6);
   background: transparent;
   min-height: 100vh;
   height: 100%;
@@ -7,24 +7,36 @@
   max-width: none;
   display: flex;
   flex-direction: column;
-  gap: 2rem;
+  gap: var(--space-8);
   box-sizing: border-box;
+  animation: fadeIn 0.8s ease-out;
 }
 
 .dashboard-header {
   text-align: center;
-  margin-bottom: 2rem;
-  padding: 2rem 1rem;
-  background: linear-gradient(135deg, rgba(37, 99, 235, 0.1), rgba(99, 102, 241, 0.1));
-  border-radius: 16px;
-  border: 1px solid rgba(37, 99, 235, 0.1);
+  margin-bottom: var(--space-8);
+  padding: var(--space-12) var(--space-6);
+  background: linear-gradient(135deg, var(--primary-50), var(--primary-100));
+  border-radius: var(--radius-2xl);
+  border: 1px solid var(--border-light);
+  backdrop-filter: blur(20px);
+  box-shadow: var(--shadow-lg);
+  transition: var(--transition-normal);
+  animation: slideInFromLeft 0.6s ease-out;
+  animation-delay: 0.2s;
+  animation-fill-mode: both;
+}
+
+.dashboard-header:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-xl);
 }
 
 .dashboard-header h1 {
-  font-size: 3rem;
+  font-size: clamp(var(--text-3xl), 5vw, var(--text-5xl));
   font-weight: 800;
-  margin: 0 0 0.5rem 0;
-  background: linear-gradient(135deg, #2563eb, #6366f1);
+  margin: 0 0 var(--space-3) 0;
+  background: linear-gradient(135deg, var(--primary-600), var(--primary-700));
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -34,68 +46,91 @@
 }
 
 .dashboard-header p {
-  color: #64748b;
-  font-size: 1.25rem;
+  color: var(--text-secondary);
+  font-size: var(--text-xl);
   font-weight: 500;
   margin: 0;
-  line-height: 1.4;
+  line-height: 1.6;
   text-shadow: none;
   opacity: 0.9;
 }
 
 .location {
-  color: #475569;
-  font-size: 1rem;
+  color: var(--text-secondary);
+  font-size: var(--text-base);
   font-weight: 600;
-  margin-bottom: 0.5rem;
+  margin-bottom: var(--space-3);
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
+  gap: var(--space-2);
 }
 
 .last-updated {
-  color: #94a3b8;
-  font-size: 0.875rem;
+  color: var(--text-tertiary);
+  font-size: var(--text-sm);
   font-weight: 400;
-  margin-top: 1rem;
+  margin-top: var(--space-4);
   font-style: italic;
 }
 
 .aqi-main-card {
-  margin-bottom: 30px;
+  margin-bottom: var(--space-8);
+  background: var(--bg-glass);
+  backdrop-filter: blur(20px);
+  border-radius: var(--radius-2xl);
+  padding: var(--space-8);
+  border: 1px solid var(--border-light);
+  box-shadow: var(--shadow-lg);
+  transition: var(--transition-normal);
+  animation: scaleIn 0.8s ease-out;
+  animation-delay: 0.4s;
+  animation-fill-mode: both;
+}
+
+.aqi-main-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-xl);
 }
 
 .aqi-display {
   display: flex;
   align-items: center;
-  gap: 40px;
+  gap: var(--space-12);
   justify-content: center;
   flex-wrap: wrap;
 }
 
 .aqi-circle {
-  width: 150px;
-  height: 150px;
+  width: 180px;
+  height: 180px;
   border: 8px solid;
-  border-radius: 50%;
+  border-radius: var(--radius-full);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   position: relative;
+  transition: var(--transition-bounce);
+  box-shadow: var(--shadow-md);
+}
+
+.aqi-circle:hover {
+  transform: scale(1.05);
+  box-shadow: var(--shadow-lg);
 }
 
 .aqi-value {
-  font-size: 3rem;
+  font-size: var(--text-5xl);
   font-weight: 700;
-  color: #333;
+  color: var(--text-primary);
 }
 
 .aqi-label {
-  font-size: 1rem;
-  color: #666;
+  font-size: var(--text-base);
+  color: var(--text-secondary);
   font-weight: 600;
+  margin-top: var(--space-1);
 }
 
 .aqi-info {
@@ -104,37 +139,69 @@
 }
 
 .status-icon {
-  margin-bottom: 12px;
+  margin-bottom: var(--space-3);
+  transition: var(--transition-bounce);
+}
+
+.status-icon:hover {
+  transform: scale(1.1);
 }
 
 .status-icon.good {
-  color: #4CAF50;
+  color: var(--success-600);
 }
 
 .status-icon.moderate {
-  color: #FF9800;
+  color: var(--warning-600);
 }
 
 .status-icon.unhealthy {
-  color: #f44336;
+  color: var(--error-600);
 }
 
 .aqi-status {
-  font-size: 1.8rem;
-  font-weight: 600;
-  margin-bottom: 12px;
+  font-size: var(--text-2xl);
+  font-weight: 700;
+  margin-bottom: var(--space-3);
+  color: var(--text-primary);
 }
 
 .aqi-description {
-  font-size: 1rem;
-  color: #666;
-  line-height: 1.5;
+  font-size: var(--text-base);
+  color: var(--text-secondary);
+  line-height: 1.6;
 }
 
 .dashboard-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-  gap: 20px;
+  gap: var(--space-6);
+}
+
+.dashboard-grid > * {
+  animation: fadeIn 0.6s ease-out;
+  animation-fill-mode: both;
+}
+
+.dashboard-grid > *:nth-child(1) { animation-delay: 0.6s; }
+.dashboard-grid > *:nth-child(2) { animation-delay: 0.8s; }
+.dashboard-grid > *:nth-child(3) { animation-delay: 1.0s; }
+.dashboard-grid > *:nth-child(4) { animation-delay: 1.2s; }
+
+.card {
+  background: var(--bg-glass);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-xl);
+  padding: var(--space-6);
+  box-shadow: var(--shadow-md);
+  transition: var(--transition-bounce);
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--primary-300);
 }
 
 .pollutants-chart {
@@ -145,158 +212,296 @@
 .pollutants-details h3,
 .recommendations h3,
 .pollutants-chart h3 {
-  font-size: 1.3rem;
-  font-weight: 600;
-  color: #333;
-  margin-bottom: 20px;
-  border-bottom: 2px solid #667eea;
-  padding-bottom: 8px;
+  font-size: var(--text-xl);
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: var(--space-5);
+  border-bottom: 3px solid var(--primary-500);
+  padding-bottom: var(--space-2);
+  position: relative;
+}
+
+.weather-info h3::after,
+.pollutants-details h3::after,
+.recommendations h3::after,
+.pollutants-chart h3::after {
+  content: '';
+  position: absolute;
+  bottom: -3px;
+  left: 0;
+  width: 40px;
+  height: 3px;
+  background: var(--primary-600);
+  border-radius: var(--radius-full);
 }
 
 .weather-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 20px;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--space-5);
 }
 
 .weather-item {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 16px;
-  background: rgba(102, 126, 234, 0.05);
-  border-radius: 12px;
-  border: 1px solid rgba(102, 126, 234, 0.1);
+  gap: var(--space-3);
+  padding: var(--space-4);
+  background: linear-gradient(135deg, var(--primary-50), var(--primary-100));
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-light);
+  transition: var(--transition-normal);
+}
+
+.weather-item:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+  background: linear-gradient(135deg, var(--primary-100), var(--primary-200));
 }
 
 .weather-icon {
-  color: #667eea;
+  color: var(--primary-600);
   flex-shrink: 0;
+  transition: var(--transition-bounce);
+}
+
+.weather-item:hover .weather-icon {
+  transform: scale(1.1);
 }
 
 .weather-value {
   display: block;
-  font-size: 1.4rem;
-  font-weight: 600;
-  color: #333;
+  font-size: var(--text-xl);
+  font-weight: 700;
+  color: var(--text-primary);
 }
 
 .weather-label {
   display: block;
-  font-size: 0.9rem;
-  color: #666;
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  font-weight: 500;
 }
 
 .pollutants-list {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: var(--space-4);
 }
 
 .pollutant-item {
-  padding: 16px;
-  background: rgba(0, 0, 0, 0.02);
-  border-radius: 8px;
-  border: 1px solid rgba(0, 0, 0, 0.05);
+  padding: var(--space-4);
+  background: linear-gradient(135deg, var(--secondary-50), var(--secondary-100));
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-light);
+  transition: var(--transition-normal);
+}
+
+.pollutant-item:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+  background: linear-gradient(135deg, var(--secondary-100), var(--secondary-200));
 }
 
 .pollutant-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 8px;
+  margin-bottom: var(--space-2);
 }
 
 .pollutant-name {
-  font-weight: 600;
-  color: #333;
+  font-weight: 700;
+  color: var(--text-primary);
+  font-size: var(--text-base);
 }
 
 .pollutant-value {
-  font-weight: 600;
-  color: #667eea;
+  font-weight: 700;
+  color: var(--primary-600);
+  font-size: var(--text-lg);
 }
 
 .pollutant-bar {
-  height: 8px;
-  background: rgba(0, 0, 0, 0.1);
-  border-radius: 4px;
+  height: 10px;
+  background: var(--secondary-200);
+  border-radius: var(--radius-full);
   overflow: hidden;
-  margin-bottom: 4px;
+  margin-bottom: var(--space-1);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 .pollutant-progress {
   height: 100%;
-  border-radius: 4px;
-  transition: width 0.3s ease;
+  border-radius: var(--radius-full);
+  transition: width var(--transition-slow);
+  background: linear-gradient(90deg, var(--primary-500), var(--primary-600));
 }
 
 .pollutant-limit {
-  font-size: 0.8rem;
-  color: #888;
+  font-size: var(--text-xs);
+  color: var(--text-tertiary);
+  font-weight: 500;
 }
 
 .recommendations-list {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: var(--space-3);
 }
 
 .recommendation-item {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 12px 16px;
-  border-radius: 8px;
-  font-weight: 500;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border-radius: var(--radius-lg);
+  font-weight: 600;
+  transition: var(--transition-normal);
+  border: 1px solid transparent;
+}
+
+.recommendation-item:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
 }
 
 .recommendation-item.good {
-  background: rgba(76, 175, 80, 0.1);
-  color: #2E7D32;
-  border: 1px solid rgba(76, 175, 80, 0.2);
+  background: linear-gradient(135deg, var(--success-50), rgba(16, 185, 129, 0.1));
+  color: var(--success-700);
+  border-color: var(--success-200);
+}
+
+.recommendation-item.good:hover {
+  background: linear-gradient(135deg, var(--success-100), rgba(16, 185, 129, 0.15));
 }
 
 .recommendation-item.moderate {
-  background: rgba(255, 152, 0, 0.1);
-  color: #E65100;
-  border: 1px solid rgba(255, 152, 0, 0.2);
+  background: linear-gradient(135deg, var(--warning-50), rgba(245, 158, 11, 0.1));
+  color: var(--warning-700);
+  border-color: var(--warning-200);
+}
+
+.recommendation-item.moderate:hover {
+  background: linear-gradient(135deg, var(--warning-100), rgba(245, 158, 11, 0.15));
 }
 
 .recommendation-item.unhealthy {
-  background: rgba(244, 67, 54, 0.1);
-  color: #C62828;
-  border: 1px solid rgba(244, 67, 54, 0.2);
+  background: linear-gradient(135deg, var(--error-50), rgba(239, 68, 68, 0.1));
+  color: var(--error-700);
+  border-color: var(--error-200);
 }
 
-/* Responsive design */
-@media (max-width: 1024px) {
+.recommendation-item.unhealthy:hover {
+  background: linear-gradient(135deg, var(--error-100), rgba(239, 68, 68, 0.15));
+}
+
+/* Enhanced/* Loading States */
+.loading-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  padding: var(--space-8);
+  color: var(--text-secondary);
+}
+
+.loading-spinner {
+  width: 24px;
+  height: 24px;
+  border: 2px solid var(--secondary-200);
+  border-top: 2px solid var(--primary-500);
+  border-radius: var(--radius-full);
+  animation: spin 1s linear infinite;
+}
+
+/* Status Icons with Pulse Animation */
+.status-icon.good {
+  color: var(--success-500);
+  animation: pulse 2s infinite;
+}
+
+.status-icon.moderate {
+  color: var(--warning-500);
+  animation: pulse 2s infinite;
+}
+
+.status-icon.unhealthy {
+  color: var(--error-500);
+  animation: pulse 2s infinite;
+}
+
+/* Interactive Elements */
+.refresh-button {
+  background: var(--primary-500);
+  color: white;
+  border: none;
+  border-radius: var(--radius-lg);
+  padding: var(--space-3) var(--space-4);
+  cursor: pointer;
+  transition: var(--transition-bounce);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.refresh-button:hover {
+  background: var(--primary-600);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.refresh-button:active {
+  transform: translateY(0);
+}
+
+.refresh-button svg {
+  transition: var(--transition-bounce);
+}
+
+.refresh-button:hover svg {
+  transform: rotate(180deg);
+}
+@media (max-width: 1200px) {
   .pollutants-chart {
     grid-column: span 1;
   }
   
   .dashboard-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
   }
 }
 
 @media (max-width: 768px) {
+  .dashboard {
+    padding: var(--space-4);
+    gap: var(--space-6);
+  }
+  
+  .dashboard-header {
+    padding: var(--space-8) var(--space-4);
+    margin-bottom: var(--space-6);
+  }
+  
   .dashboard-header h1 {
-    font-size: 2rem;
+    font-size: var(--text-3xl);
+  }
+  
+  .dashboard-header p {
+    font-size: var(--text-lg);
   }
   
   .aqi-display {
     flex-direction: column;
-    gap: 20px;
+    gap: var(--space-6);
   }
   
   .aqi-circle {
-    width: 120px;
-    height: 120px;
+    width: 150px;
+    height: 150px;
   }
   
   .aqi-value {
-    font-size: 2.5rem;
+    font-size: var(--text-4xl);
   }
   
   .weather-grid {
@@ -305,33 +510,90 @@
   
   .dashboard-grid {
     grid-template-columns: 1fr;
+    gap: var(--space-4);
+  }
+  
+  .card {
+    padding: var(--space-4);
   }
 }
 
 @media (max-width: 480px) {
   .dashboard {
-    padding: 10px 0;
+    padding: var(--space-3);
+    gap: var(--space-4);
+  }
+  
+  .dashboard-header {
+    padding: var(--space-6) var(--space-3);
   }
   
   .dashboard-header h1 {
-    font-size: 1.8rem;
+    font-size: var(--text-2xl);
+  }
+  
+  .dashboard-header p {
+    font-size: var(--text-base);
   }
   
   .aqi-circle {
-    width: 100px;
-    height: 100px;
+    width: 120px;
+    height: 120px;
     border-width: 6px;
   }
   
   .aqi-value {
-    font-size: 2rem;
+    font-size: var(--text-3xl);
   }
   
   .weather-item {
-    padding: 12px;
+    padding: var(--space-3);
   }
   
   .weather-value {
-    font-size: 1.2rem;
+    font-size: var(--text-lg);
+  }
+  
+  .card {
+    padding: var(--space-3);
+  }
+  
+  .pollutant-item {
+    padding: var(--space-3);
+  }
+  
+  .recommendation-item {
+    padding: var(--space-3);
+  }
+}
+
+/* Accessibility Improvements */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Focus States for Better Accessibility */
+.card:focus-within,
+.weather-item:focus-within,
+.pollutant-item:focus-within,
+.recommendation-item:focus-within {
+  outline: 2px solid var(--primary-500);
+  outline-offset: 2px;
+}
+
+/* High Contrast Mode Support */
+@media (prefers-contrast: high) {
+  .card {
+    border: 2px solid var(--text-primary);
+  }
+  
+  .weather-item,
+  .pollutant-item,
+  .recommendation-item {
+    border: 1px solid var(--text-primary);
   }
 }
