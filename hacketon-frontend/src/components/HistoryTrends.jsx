@@ -221,13 +221,13 @@ const HistoryTrends = () => {
     <div className="history-trends">
       <div className="container">
         <div className="page-header">
-          <h1><BarChart3 className="header-icon" />Histórico e Tendências</h1>
-          <p>Análise detalhada da qualidade do ar ao longo do tempo</p>
+          <h1><BarChart3 className="header-icon" />History and Trends</h1>
+          <p>Detailed analysis of air quality over time</p>
         </div>
 
         <div className="controls-section">
           <div className="control-group">
-            <label>Período:</label>
+            <label>Period:</label>
             <select 
               value={selectedPeriod} 
               onChange={(e) => setSelectedPeriod(e.target.value)}
@@ -242,7 +242,7 @@ const HistoryTrends = () => {
           </div>
 
           <div className="control-group">
-            <label>Poluente:</label>
+            <label>Pollutant:</label>
             <select 
               value={selectedPollutant} 
               onChange={(e) => setSelectedPollutant(e.target.value)}
@@ -257,7 +257,7 @@ const HistoryTrends = () => {
           </div>
 
           <div className="control-group">
-            <label>Tipo de Gráfico:</label>
+            <label>Chart Type:</label>
             <div className="chart-type-buttons">
               {chartTypes.map(type => {
                 const IconComponent = type.icon;
@@ -277,7 +277,7 @@ const HistoryTrends = () => {
 
           <button className="export-btn">
             <Download size={16} />
-            Exportar Dados
+            Export Data
           </button>
         </div>
 

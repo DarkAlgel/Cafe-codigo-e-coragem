@@ -5,6 +5,8 @@ import Dashboard from './components/Dashboard';
 import CO2Dashboard from './components/CO2Dashboard';
 import MapView from './components/MapView';
 import PollutantDetails from './components/PollutantDetails';
+import Pollutants from './components/Pollutants';
+import Health from './components/Health';
 import AlertSettings from './components/AlertSettings';
 import HealthTips from './components/HealthTips';
 import HistoryTrends from './components/HistoryTrends';
@@ -34,6 +36,8 @@ function App() {
             <Route path="/co2" element={<CO2Dashboard />} />
             <Route path="/map" element={<MapView />} />
             <Route path="/pollutants" element={<PollutantDetails />} />
+            <Route path="/poluentes" element={<Pollutants />} />
+            <Route path="/saude" element={<Health />} />
             <Route path="/alerts" element={<AlertSettings />} />
             <Route path="/health" element={<HealthTips />} />
             <Route path="/history" element={<HistoryTrends />} />

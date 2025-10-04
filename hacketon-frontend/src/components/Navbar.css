@@ -41,15 +41,26 @@
   transform: scale(1.05);
 }
 
-.brand-icon {
-  color: var(--primary-500);
-  filter: drop-shadow(0 2px 4px rgba(59, 130, 246, 0.3));
+.brand-icon-container {
+  width: 32px;
+  height: 32px;
+  background: #4ade80;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   transition: var(--transition-bounce);
 }
 
-.navbar-brand:hover .brand-icon {
-  transform: rotate(10deg);
-  color: var(--primary-600);
+.brand-icon-text {
+  color: white;
+  font-weight: 700;
+  font-size: 18px;
+}
+
+.navbar-brand:hover .brand-icon-container {
+  transform: scale(1.1);
+  background: #22c55e;
 }
 
 .brand-text {

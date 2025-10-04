@@ -36,7 +36,7 @@ def create_mock_app():
         "AIRS3STD": {
             "value": 295.15,  # Em Kelvin (equivale a 22°C)
             "units": "K",
-            "source_dataset": "AIRS3STD / AIRS Temperatura (Simulado)",
+            "source_dataset": "AIRS3STD / AIRS Temperature (Simulated)",
             "celsius": 22.0,
             "quality": "good",
             "timestamp": datetime.now().isoformat()
@@ -44,7 +44,7 @@ def create_mock_app():
         "CYGNSS": {
             "value": 5.8,
             "units": "m/s",
-            "source_dataset": "CYGNSS / Velocidade do Vento (Simulado)",
+            "source_dataset": "CYGNSS / Wind Speed (Simulated)",
             "quality": "excellent",
             "timestamp": datetime.now().isoformat()
         }
@@ -64,7 +64,7 @@ def create_mock_app():
             "success": True,
             "data": {
                 "co2_ppm": current_co2,
-                "location": "Nova Iorque, NY",
+                "location": "New York, NY",
                 "coordinates": {"lat": 40.7128, "lon": -74.0060},
                 "timestamp": datetime.now().isoformat(),
                 "source": "NASA OCO-2 (Simulado)",
@@ -85,26 +85,26 @@ def create_mock_app():
         """Interpretação dos níveis de CO2"""
         if co2_value < 400:
             return {
-                "level": "Excelente",
-                "description": "Níveis de CO2 muito baixos, qualidade do ar excelente",
+                "level": "Excellent",
+                "description": "Very low CO2 levels, excellent air quality",
                 "color": "#00ff00"
             }
         elif co2_value < 420:
             return {
-                "level": "Bom", 
-                "description": "Níveis de CO2 normais para áreas urbanas",
+                "level": "Good", 
+                "description": "Normal CO2 levels for urban areas",
                 "color": "#90EE90"
             }
         elif co2_value < 450:
             return {
-                "level": "Moderado",
-                "description": "Níveis de CO2 elevados, atenção recomendada",
+                "level": "Moderate",
+                "description": "Elevated CO2 levels, attention recommended",
                 "color": "#FFD700"
             }
         else:
             return {
-                "level": "Alto",
-                "description": "Níveis de CO2 muito altos, cuidado necessário",
+                "level": "High",
+                "description": "Very high CO2 levels, caution required",
                 "color": "#FF6347"
             }
 
@@ -112,16 +112,16 @@ def create_mock_app():
         """Recomendações baseadas nos níveis de CO2"""
         if co2_value < 420:
             return [
-                "Continue monitorando os níveis",
-                "Mantenha atividades ao ar livre normalmente",
-                "Promova o uso de transporte sustentável"
+                "Continue monitoring levels",
+                "Maintain normal outdoor activities",
+                "Promote sustainable transportation use"
             ]
         else:
             return [
-                "Evite atividades intensas ao ar livre",
-                "Use transporte público ou bicicleta",
-                "Considere usar purificadores de ar em ambientes fechados",
-                "Plante mais árvores na região"
+                "Avoid intense outdoor activities",
+                "Use public transport or bicycle",
+                "Consider using air purifiers in closed environments",
+                "Plant more trees in the region"
             ]
 
     # --- Endpoints da API Mock ---

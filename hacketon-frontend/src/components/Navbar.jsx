@@ -19,17 +19,17 @@ const Navbar = () => {
 
   const navItems = [
     { path: '/', icon: Home, label: 'Dashboard' },
-    { path: '/co2', icon: Activity, label: 'CO2 Monitor' },
-    { path: '/nasa-data', icon: Satellite, label: 'NASA Data' },
-    { path: '/data-sources', icon: Database, label: 'Data Sources' },
-    { path: '/about', icon: User, label: 'Sobre' }
+    { path: '/poluentes', icon: Activity, label: 'Poluentes' },
+    { path: '/saude', icon: Heart, label: 'Saúde' }
   ];
 
   return (
     <nav className="navbar">
       <div className="navbar-container">
         <div className="navbar-brand">
-          <Wind className="brand-icon" />
+          <div className="brand-icon-container">
+            <span className="brand-icon-text">A</span>
+          </div>
           <span className="brand-text">Air Sentinel</span>
         </div>
         

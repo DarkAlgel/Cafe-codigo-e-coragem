@@ -201,24 +201,24 @@ const HealthTips = () => {
     cardiovascular: [
       {
         id: 18,
-        title: 'Monitore Pressão Arterial',
-        description: 'A poluição pode afetar a pressão. Monitore mais frequentemente.',
+        title: 'Monitor Blood Pressure',
+        description: 'Pollution can affect blood pressure. Monitor more frequently.',
         priority: 'high',
         icon: Heart,
         applicable: ['moderate', 'sensitive', 'unhealthy', 'very_unhealthy', 'hazardous']
       },
       {
         id: 19,
-        title: 'Evite Esforços Físicos Intensos',
-        description: 'Reduza atividades que aumentem muito a frequência cardíaca.',
+        title: 'Avoid Intense Physical Efforts',
+        description: 'Reduce activities that significantly increase heart rate.',
         priority: 'high',
         icon: Activity,
         applicable: ['sensitive', 'unhealthy', 'very_unhealthy', 'hazardous']
       },
       {
         id: 20,
-        title: 'Mantenha Medicamentos Cardíacos',
-        description: 'Tenha sempre à mão medicamentos para emergências cardíacas.',
+        title: 'Keep Cardiac Medications',
+        description: 'Always have cardiac emergency medications at hand.',
         priority: 'high',
         icon: Shield,
         applicable: ['moderate', 'sensitive', 'unhealthy', 'very_unhealthy', 'hazardous']
@@ -229,26 +229,26 @@ const HealthTips = () => {
   const weatherTips = [
     {
       condition: 'high_humidity',
-      title: 'Alta Umidade',
-      description: 'Use desumidificador e evite atividades externas prolongadas.',
+      title: 'High Humidity',
+      description: 'Use dehumidifier and avoid prolonged outdoor activities.',
       icon: Droplets
     },
     {
       condition: 'high_temperature',
-      title: 'Temperatura Elevada',
-      description: 'Mantenha-se hidratado e procure ambientes climatizados.',
+      title: 'High Temperature',
+      description: 'Stay hydrated and seek air-conditioned environments.',
       icon: Thermometer
     },
     {
       condition: 'low_wind',
-      title: 'Pouco Vento',
-      description: 'Poluentes tendem a se acumular. Evite áreas de tráfego intenso.',
+      title: 'Low Wind',
+      description: 'Pollutants tend to accumulate. Avoid heavy traffic areas.',
       icon: Wind
     },
     {
       condition: 'sunny',
-      title: 'Dia Ensolarado',
-      description: 'Ozônio pode aumentar. Evite exercícios ao ar livre no meio do dia.',
+      title: 'Sunny Day',
+      description: 'UV radiation can increase ozone levels. Use sunscreen.',
       icon: Sun
     }
   ];

@@ -7,7 +7,7 @@ import logging
 
 # Importar os módulos da API
 from api_mock import create_mock_app
-from api_live import create_live_app
+from api_real import create_real_app
 
 # Configuração de logging
 logging.basicConfig(level=logging.INFO)
@@ -38,7 +38,7 @@ def create_app(use_live_data=False):
     @app.route('/')
     def index():
         return jsonify({
-            "message": "Hacketon API Python - Dados da NASA para Qualidade do Ar",
+            "message": "Hacketon Python API - NASA Data for Air Quality",
             "version": "2.0.0",
             "mode": "live" if use_live_data else "mock",
             "endpoints": {
@@ -70,26 +70,32 @@ def create_app(use_live_data=False):
     
     # Registrar blueprints baseado no modo
     if use_live_data:
-        logger.info("🌐 Iniciando API com dados LIVE da NASA")
-        live_app = create_live_app()
-        # Registrar as rotas do app live
-        for rule in live_app.url_map.iter_rules():
-            if rule.endpoint != 'static':
-                app.add_url_rule(
-                    rule.rule, 
-                    rule.endpoint, 
-                    live_app.view_functions[rule.endpoint],
-                    methods=rule.methods
-                )
-    else:
+        try:
+            logger.info("🌐 Iniciando API com dados REAIS da NASA")
+            real_app = create_real_app()
+            # Registrar as rotas do app real, exceto as que já existem
+            for rule in real_app.url_map.iter_rules():
+                if rule.endpoint != 'static' and rule.endpoint not in ['index', 'health_check']:
+                    app.add_url_rule(
+                        rule.rule, 
+                        f"real_{rule.endpoint}", 
+                        real_app.view_functions[rule.endpoint],
+                        methods=rule.methods
+                    )
+        except ImportError as e:
+            logger.warning(f"⚠️ Não foi possível importar api_real: {e}")
+            logger.info("🎭 Usando dados MOCK como fallback")
+            use_live_data = False
+    
+    if not use_live_data:
         logger.info("🎭 Iniciando API com dados MOCK (recomendado para desenvolvimento)")
         mock_app = create_mock_app()
-        # Registrar as rotas do app mock
+        # Registrar as rotas do app mock, exceto as que já existem
         for rule in mock_app.url_map.iter_rules():
-            if rule.endpoint != 'static':
+            if rule.endpoint != 'static' and rule.endpoint not in ['index', 'health_check']:
                 app.add_url_rule(
                     rule.rule, 
-                    rule.endpoint, 
+                    f"mock_{rule.endpoint}", 
                     mock_app.view_functions[rule.endpoint],
                     methods=rule.methods
                 )

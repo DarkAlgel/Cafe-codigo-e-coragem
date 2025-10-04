@@ -49,6 +49,36 @@ class ApiService {
     return this.makeRequest('/co2_stats');
   }
 
+  // ===== ENDPOINTS DE DADOS ATMOSFÉRICOS =====
+
+  async getTempoNO2Data() {
+    return this.makeRequest('/tempo_no2');
+  }
+
+  async getMerra2PBLHData() {
+    return this.makeRequest('/merra2_pblh');
+  }
+
+  async getAirsTemperatureData() {
+    return this.makeRequest('/airs_temperature');
+  }
+
+  async getCygnssWindData() {
+    return this.makeRequest('/cygnss_wind');
+  }
+
+  async getGoesCloudsData() {
+    return this.makeRequest('/goes_clouds');
+  }
+
+  async getTempoData() {
+    return this.makeRequest('/tempo/data');
+  }
+
+  async getEarthdataDatasets() {
+    return this.makeRequest('/earthdata/datasets');
+  }
+
   // ===== MÉTODOS UTILITÁRIOS =====
 
   // Obter dados de CO2 para uma localização específica
@@ -136,6 +166,88 @@ class ApiService {
     } else {
       return { status: 'high', color: '#F44336', description: 'Muito Elevado', aqi: 200, label: 'Insalubre' };
     }
+  }
+
+  // ===== MÉTODOS DE TEMPO REAL =====
+
+  // Buscar todos os dados atmosféricos em tempo real
+  async getAllAtmosphericData() {
+    try {
+      const [co2Data, tempoData, temperatureData, windData, cloudsData] = await Promise.all([
+        this.getCO2Data(),
+        this.getTempoData(),
+        this.getAirsTemperatureData(),
+        this.getCygnssWindData(),
+        this.getGoesCloudsData()
+      ]);
+
+      return {
+        co2: co2Data,
+        tempo: tempoData,
+        temperature: temperatureData,
+        wind: windData,
+        clouds: cloudsData,
+        timestamp: new Date().toISOString()
+      };
+    } catch (error) {
+      console.error('Error fetching all atmospheric data:', error);
+      throw error;
+    }
+  }
+
+  // Configurar polling para dados em tempo real
+  startRealTimePolling(callback, interval = 60000) {
+    const pollData = async () => {
+      try {
+        const data = await this.getAllAtmosphericData();
+        callback(data);
+      } catch (error) {
+        console.error('Error in real-time polling:', error);
+        callback(null, error);
+      }
+    };
+
+    // Primeira chamada imediata
+    pollData();
+
+    // Configurar intervalo
+    const intervalId = setInterval(pollData, interval);
+
+    // Retornar função para parar o polling
+    return () => clearInterval(intervalId);
+  }
+
+  // Formatar dados para o dashboard
+  formatAtmosphericDataForDashboard(data) {
+    if (!data) return null;
+
+    return {
+      airQuality: {
+        co2: data.co2?.value || 0,
+        co2Unit: data.co2?.units || 'ppm',
+        no2: data.tempo?.data?.value || 0,
+        no2Unit: data.tempo?.data?.units || 'mol/m²',
+        pollutant: data.tempo?.data?.pollutant || 'NO2',
+        quality: data.tempo?.data?.quality || 'unknown'
+      },
+      weather: {
+        temperature: data.temperature?.celsius || 0,
+        temperatureF: data.temperature?.fahrenheit || 0,
+        windSpeed: data.wind?.wind_speed || 0,
+        windDirection: data.wind?.wind_direction || 0,
+        cloudCoverage: data.clouds?.cloud_fraction || 0
+      },
+      metadata: {
+        lastUpdated: data.timestamp,
+        sources: {
+          co2: data.co2?.source || 'NASA/MERRA-2',
+          tempo: data.tempo?.data?.source || 'TEMPO',
+          temperature: data.temperature?.source_dataset || 'AIRS',
+          wind: data.wind?.source_dataset || 'CYGNSS',
+          clouds: data.clouds?.source_dataset || 'GOES'
+        }
+      }
+    };
   }
 }
 

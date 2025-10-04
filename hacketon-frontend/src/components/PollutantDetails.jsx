@@ -12,8 +12,8 @@ const PollutantDetails = () => {
 
   // Mock pollutant data
   const mockPollutantData = {
-    location: 'São Paulo Downtown',
-    coordinates: { lat: -23.5505, lng: -46.6333 },
+    location: 'New York Downtown',
+    coordinates: { lat: 40.7128, lng: -74.0060 },
     lastUpdated: new Date().toISOString(),
     aqi: 85,
     status: 'moderate',
@@ -181,10 +181,10 @@ const PollutantDetails = () => {
 
   const getStatusLabel = (status) => {
     switch (status) {
-      case 'good': return 'Bom';
-      case 'moderate': return 'Moderado';
-      case 'unhealthy': return 'Insalubre';
-      default: return 'Desconhecido';
+      case 'good': return 'Good';
+      case 'moderate': return 'Moderate';
+      case 'unhealthy': return 'Unhealthy';
+      default: return 'Unknown';
     }
   };
 
