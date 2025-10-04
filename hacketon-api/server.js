@@ -8,13 +8,16 @@ import rateLimit from 'express-rate-limit';
 // Importar configurações
 import { connectDB } from './src/config/database.js';
 import { errorHandler } from './src/middleware/errorHandler.js';
+import { specs, swaggerUi, swaggerUiOptions } from './src/config/swagger.js';
 
 // Importar rotas
-import authRoutes from './src/routes/auth.js';
-import airQualityRoutes from './src/routes/airQuality.js';
-import userRoutes from './src/routes/user.js';
-import alertRoutes from './src/routes/alerts.js';
-import stationRoutes from './src/routes/stations.js';
+// import authRoutes from './src/routes/auth.js';
+// import airQualityRoutes from './src/routes/airQuality.js';
+// import userRoutes from './src/routes/user.js';
+// import alertRoutes from './src/routes/alerts.js';
+// import stationRoutes from './src/routes/stations.js';
+import nasaEarthdataRoutes from './src/routes/nasaEarthdataRoutes.js';
+import tempoRoutes from './src/routes/tempoRoutes.js';
 
 // Carregar variáveis de ambiente
 dotenv.config();
@@ -60,39 +63,34 @@ if (process.env.NODE_ENV === 'development') {
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
-// Rota de health check
+// Health check endpoint
 app.get('/health', (req, res) => {
   res.status(200).json({
     status: 'OK',
-    message: 'Hacketon API está funcionando!',
+    message: 'Air Sentinel API está funcionando',
     timestamp: new Date().toISOString(),
-    environment: process.env.NODE_ENV,
     version: '1.0.0'
   });
 });
 
-// Rotas da API
-app.use('/api/auth', authRoutes);
-app.use('/api/air-quality', airQualityRoutes);
-app.use('/api/users', userRoutes);
-app.use('/api/alerts', alertRoutes);
-app.use('/api/stations', stationRoutes);
+// Documentação da API com Swagger
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs, swaggerUiOptions));
 
-// Rota 404
-app.use('*', (req, res) => {
-  res.status(404).json({
-    error: 'Rota não encontrada',
-    message: `A rota ${req.originalUrl} não existe nesta API.`,
-    availableRoutes: [
-      '/health',
-      '/api/auth',
-      '/api/air-quality',
-      '/api/users',
-      '/api/alerts',
-      '/api/stations'
-    ]
-  });
+// Rota para acessar a especificação OpenAPI em JSON
+app.get('/api-docs.json', (req, res) => {
+  res.setHeader('Content-Type', 'application/json');
+  res.send(specs);
 });
+
+// Rotas da API
+// Configurar rotas
+// app.use('/api/auth', authRoutes);
+// app.use('/api/air-quality', airQualityRoutes);
+// app.use('/api/users', userRoutes);
+// app.use('/api/alerts', alertRoutes);
+// app.use('/api/stations', stationRoutes);
+app.use('/api/nasa-earthdata', nasaEarthdataRoutes);
+app.use('/api/tempo', tempoRoutes);
 
 // Middleware de tratamento de erros
 app.use(errorHandler);

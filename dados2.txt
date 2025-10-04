@@ -1,0 +1,186 @@
+Excelente pergunta. Agora vamos para a parte prática: transformar esses "Short Names" em dados reais dentro do seu projeto.
+
+Vou te dar um guia completo, do backend ao frontend, usando o TEMPO_NO2_L3_NRT como nosso primeiro exemplo.
+
+O Fluxo de Trabalho Geral
+Backend (Python) -> API -> Frontend (React)
+
+O Backend em Python vai usar o earthaccess para buscar e baixar o arquivo de dados da NASA.
+
+Ele vai abrir esse arquivo, extrair o dado de poluição para Nova Iorque e processá-lo.
+
+O Backend vai então expor esse dado simples através de uma API local.
+
+O seu Frontend em React vai chamar essa API para pegar o dado e exibi-lo para o usuário.
+
+Parte 1: O Backend (Python) - O "Trabalho Pesado"
+Esta parte é para a "Pessoa 2" ou "Pessoa 3" da sua equipe.
+
+Passo 1: Prepare o Ambiente Python
+
+Abra o terminal e instale as bibliotecas necessárias:
+
+Bash
+
+pip install flask flask-cors earthaccess xarray netcdf4
+flask & flask-cors: Para criar a API. cors é essencial para que seu app React possa se comunicar com o backend.
+
+earthaccess: Para baixar os dados da NASA.
+
+xarray & netcdf4: Para abrir e ler os arquivos de dados científicos (.nc) que a NASA fornece.
+
+Passo 2: Crie o Arquivo da API (api.py)
+
+Crie um arquivo chamado api.py e cole o seguinte código. Leia os comentários para entender cada passo.
+
+Python
+
+from flask import Flask, jsonify
+from flask_cors import CORS
+import earthaccess
+import xarray as xr
+import os
+import numpy as np
+
+# Configuração básica do servidor Flask
+app = Flask(__name__)
+# Habilita o CORS para permitir que o React (em outra porta) acesse esta API
+CORS(app)
+
+# Define o "endpoint" da nossa API. O React vai chamar esta URL.
+@app.route('/api/no2_data')
+def get_no2_data():
+    try:
+        # 1. Autenticação com a NASA
+        earthaccess.login(strategy="netrc") # Faz login usando um arquivo .netrc para não pedir senha toda hora
+
+        # 2. Busca pelo dado mais recente do TEMPO para Nova Iorque
+        search_results = earthaccess.search_data(
+            short_name='TEMPO_L3_NO2_NRT_V02',
+            bounding_box=(-74.3, 40.4, -73.7, 41.1),
+            count=1 # Queremos apenas o arquivo mais recente
+        )
+
+        # Se não encontrar resultados, retorna um erro
+        if not search_results:
+            return jsonify({"error": "Nenhum dado encontrado para a área."}), 404
+
+        # 3. Baixa o arquivo encontrado
+        # Ele será salvo em uma pasta local chamada 'data'
+        local_files = earthaccess.download(search_results, local_path="data")
+        
+        # Pega o caminho do arquivo que foi baixado
+        filepath = local_files[0]
+        
+        # 4. Abre e processa o arquivo .nc com xarray
+        # O 'group' é necessário porque os dados do TEMPO são organizados em grupos dentro do arquivo
+        with xr.open_dataset(filepath, group='product_data') as ds:
+            # A variável que queremos é 'nitrogendioxide_tropospheric_column'
+            # NOTA: O nome da variável pode mudar! Use print(ds) para explorar o arquivo se der erro.
+            no2_data = ds['nitrogendioxide_tropospheric_column']
+            
+            # Como os dados são uma grade (mapa), vamos calcular a média para ter um valor único para NY
+            # Ignoramos valores 'NaN' (Not a Number) que podem existir no dado
+            mean_no2_value = float(np.nanmean(no2_data.values))
+            
+            # Pegamos a unidade da variável
+            units = no2_data.attrs.get('units', 'unidade não encontrada')
+
+        # 5. Formata a resposta como um JSON simples
+        response_data = {
+            "value": round(mean_no2_value, 6), # Arredonda o valor para 6 casas decimais
+            "units": units,
+            "source": "TEMPO/NASA"
+        }
+        
+        # Limpa o arquivo baixado para não ocupar espaço
+        os.remove(filepath)
+        
+        # Retorna o JSON para o React
+        return jsonify(response_data)
+
+    except Exception as e:
+        # Se qualquer coisa der errado, retorna uma mensagem de erro
+        return jsonify({"error": str(e)}), 500
+
+# Roda o servidor na porta 5000
+if __name__ == '__main__':
+    app.run(debug=True, port=5000)
+
+Antes de rodar: Crie um arquivo chamado .netrc na sua pasta de usuário com suas credenciais do Earthdata Login para não precisar digitar a senha toda vez.
+
+Parte 2: O Frontend (React) - A Visualização
+Agora, a "Pessoa 4" pode criar um componente no React para chamar essa API e mostrar os dados.
+
+Passo 1: Crie um Componente React (TempoData.js)
+
+JavaScript
+
+import React, { useState, useEffect } from 'react';
+
+function TempoData() {
+  const [no2Data, setNo2Data] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    // Função para buscar os dados da nossa API Python
+    const fetchData = async () => {
+      try {
+        // O React (geralmente na porta 3000) chama o backend Python (na porta 5000)
+        const response = await fetch('http://127.0.0.1:5000/api/no2_data');
+        
+        if (!response.ok) {
+          throw new Error(`Erro HTTP: ${response.status}`);
+        }
+
+        const data = await response.json();
+        setNo2Data(data);
+      } catch (e) {
+        setError(e.message);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []); // O array vazio [] faz com que este efeito rode apenas uma vez, quando o componente é montado
+
+  // Renderiza uma mensagem de carregamento
+  if (isLoading) {
+    return <div>Carregando dados de NO₂ do TEMPO...</div>;
+  }
+
+  // Renderiza uma mensagem de erro
+  if (error) {
+    return <div>Erro ao buscar dados: {error}</div>;
+  }
+
+  // Renderiza os dados quando eles chegam
+  return (
+    <div>
+      <h2>Qualidade do Ar (NO₂) - Nova Iorque</h2>
+      {no2Data ? (
+        <div>
+          <p>Fonte: {no2Data.source}</p>
+          <p>
+            Nível de Dióxido de Nitrogênio: 
+            <strong> {no2Data.value}</strong> {no2Data.units}
+          </p>
+        </div>
+      ) : (
+        <p>Nenhum dado disponível.</p>
+      )}
+    </div>
+  );
+}
+
+export default TempoData;
+Como Rodar Tudo Junto
+Inicie o Backend: No seu terminal, vá para a pasta do projeto e rode python api.py. Você verá o servidor Flask iniciar.
+
+Inicie o Frontend: Em outro terminal, vá para a pasta do seu app React e rode npm start.
+
+Veja a Mágica: Abra seu navegador, e o componente React irá chamar o backend Python, que por sua vez irá buscar os dados da NASA e te entregar o resultado final.
+
+Repita esse processo para os outros datasets, criando um novo endpoint na API Python e um novo componente no React para cada um!

@@ -6,9 +6,15 @@ import {
   Eye, 
   AlertTriangle,
   CheckCircle,
-  XCircle
+  XCircle,
+  RefreshCw,
+  MapPin
 } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import apiService from '../services/apiService';
+import LocationSelector from './LocationSelector';
+import HistoricalChart from './HistoricalChart';
+import DatasetInfo from './DatasetInfo';
 import './Dashboard.css';
 
 const Dashboard = () => {
@@ -32,6 +38,113 @@ const Dashboard = () => {
       visibility: 8
     }
   });
+
+  const [tempoData, setTempoData] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [servicesHealth, setServicesHealth] = useState(null);
+  const [selectedLocation, setSelectedLocation] = useState({ lat: 40.7128, lon: -74.0060, name: 'Nova York, NY' });
+
+  // Carregar dados iniciais
+  useEffect(() => {
+    loadInitialData();
+    checkServicesHealth();
+  }, []);
+
+  // Carregar dados quando a localização mudar
+  useEffect(() => {
+    if (selectedLocation.lat && selectedLocation.lon) {
+      loadTempoData();
+    }
+  }, [selectedLocation]);
+
+  const loadInitialData = async () => {
+    try {
+      // Carregar dados de exemplo do TEMPO
+      const exampleData = await apiService.getTempoExampleData();
+      if (exampleData.success) {
+        const formattedData = apiService.formatNO2DataForDashboard(exampleData);
+        setTempoData(formattedData);
+        
+        // Atualizar dados de qualidade do ar com dados reais
+        if (formattedData) {
+          const aqiData = apiService.calculateNO2AQI(formattedData.no2.current);
+          setAirQualityData(prev => ({
+            ...prev,
+            aqi: aqiData.aqi,
+            status: aqiData.status,
+            location: formattedData.location,
+            lastUpdated: formattedData.metadata.lastUpdated,
+            pollutants: {
+              ...prev.pollutants,
+              no2: Math.round(formattedData.no2.current * 0.0019) // Conversão aproximada
+            }
+          }));
+        }
+      }
+    } catch (err) {
+      console.error('Error loading initial data:', err);
+      setError('Erro ao carregar dados iniciais');
+    }
+  };
+
+  const loadTempoData = async () => {
+    setLoading(true);
+    setError(null);
+    
+    try {
+      const data = await apiService.getNO2ForLocation(
+        selectedLocation.lat, 
+        selectedLocation.lon,
+        new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], // 7 dias atrás
+        new Date().toISOString().split('T')[0] // hoje
+      );
+      
+      if (data.success) {
+        const formattedData = apiService.formatNO2DataForDashboard(data);
+        setTempoData(formattedData);
+        
+        // Atualizar AQI baseado nos dados reais
+        if (formattedData) {
+          const aqiData = apiService.calculateNO2AQI(formattedData.no2.current);
+          setAirQualityData(prev => ({
+            ...prev,
+            aqi: aqiData.aqi,
+            status: aqiData.status,
+            location: selectedLocation.name,
+            lastUpdated: formattedData.metadata.lastUpdated,
+            pollutants: {
+              ...prev.pollutants,
+              no2: Math.round(formattedData.no2.current * 0.0019)
+            }
+          }));
+        }
+      }
+    } catch (err) {
+      console.error('Error loading TEMPO data:', err);
+      setError('Erro ao carregar dados TEMPO NO2');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const checkServicesHealth = async () => {
+    try {
+      const health = await apiService.getServicesHealth();
+      setServicesHealth(health);
+    } catch (err) {
+      console.error('Error checking services health:', err);
+    }
+  };
+
+  const handleLocationChange = (location) => {
+    setSelectedLocation(location);
+  };
+
+  const handleRefresh = () => {
+    loadTempoData();
+    checkServicesHealth();
+  };
 
   const getAirQualityStatus = (aqi) => {
     if (aqi <= 50) return { status: 'good', label: 'Boa', color: '#4CAF50' };
@@ -68,9 +181,42 @@ const Dashboard = () => {
     <div className="dashboard">
       <div className="dashboard-header">
         <h1>Air Sentinel</h1>
-        <p>Real-Time Air Quality Monitoring</p>
-        <p className="location">{airQualityData.location}</p>
+        <p>Real-Time Air Quality Monitoring with NASA TEMPO NO₂ Data</p>
+        <div className="location-controls">
+          <LocationSelector 
+            currentLocation={selectedLocation}
+            onLocationChange={handleLocationChange}
+          />
+          <button 
+            className="refresh-btn" 
+            onClick={handleRefresh} 
+            disabled={loading}
+            title="Atualizar dados"
+          >
+            <RefreshCw className={`refresh-icon ${loading ? 'spinning' : ''}`} />
+          </button>
+        </div>
         <p className="last-updated">Last updated: {airQualityData.lastUpdated}</p>
+        
+        {/* Status dos Serviços */}
+        {servicesHealth && (
+          <div className="services-status">
+            <div className={`service-indicator ${servicesHealth.nasa.status}`}>
+              NASA MERRA-2: {servicesHealth.nasa.status}
+            </div>
+            <div className={`service-indicator ${servicesHealth.tempo.status}`}>
+              TEMPO NO₂: {servicesHealth.tempo.status}
+            </div>
+          </div>
+        )}
+
+        {/* Mensagem de erro */}
+        {error && (
+          <div className="error-message">
+            <AlertTriangle className="error-icon" />
+            {error}
+          </div>
+        )}
       </div>
 
       {/* AQI Principal */}
@@ -90,11 +236,47 @@ const Dashboard = () => {
               {currentStatus.status === 'moderate' && 'Air quality is acceptable for most people. Sensitive groups may experience minor symptoms.'}
               {currentStatus.status !== 'good' && currentStatus.status !== 'moderate' && 'Air quality may be harmful to health. Consider limiting outdoor activities.'}
             </p>
+            {tempoData && (
+              <div className="tempo-info">
+                <p><strong>NO₂ TEMPO:</strong> {tempoData.no2.current.toFixed(2)} {tempoData.no2.unit}</p>
+                <p><strong>Quality:</strong> {tempoData.no2.quality}</p>
+                <p><strong>Instrument:</strong> {tempoData.metadata.instrument}</p>
+              </div>
+            )}
           </div>
         </div>
       </div>
 
       <div className="dashboard-grid">
+        {/* TEMPO NO2 Data Card */}
+        {tempoData && (
+          <div className="card tempo-data-card">
+            <h3>NASA TEMPO NO₂ Data</h3>
+            <div className="tempo-stats">
+              <div className="stat-item">
+                <span className="stat-label">Current</span>
+                <span className="stat-value">{tempoData.no2.current.toFixed(2)} {tempoData.no2.unit}</span>
+              </div>
+              <div className="stat-item">
+                <span className="stat-label">Average</span>
+                <span className="stat-value">{tempoData.no2.average.toFixed(2)} {tempoData.no2.unit}</span>
+              </div>
+              <div className="stat-item">
+                <span className="stat-label">Min</span>
+                <span className="stat-value">{tempoData.no2.min.toFixed(2)} {tempoData.no2.unit}</span>
+              </div>
+              <div className="stat-item">
+                <span className="stat-label">Max</span>
+                <span className="stat-value">{tempoData.no2.max.toFixed(2)} {tempoData.no2.unit}</span>
+              </div>
+            </div>
+            <div className="tempo-metadata">
+              <p><strong>Resolution:</strong> {tempoData.metadata.resolution}</p>
+              <p><strong>Data Quality:</strong> {tempoData.no2.quality}</p>
+            </div>
+          </div>
+        )}
+
         {/* Pollutant Levels Chart */}
         <div className="card pollutants-chart">
           <h3>Pollutant Levels</h3>
@@ -178,6 +360,12 @@ const Dashboard = () => {
             ))}
           </div>
         </div>
+
+        {/* Gráfico Histórico */}
+        <HistoricalChart location={selectedLocation} />
+
+        {/* Informações do Dataset */}
+        <DatasetInfo />
 
         {/* Recomendações */}
         <div className="card recommendations">
