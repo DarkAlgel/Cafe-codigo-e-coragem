@@ -31,7 +31,7 @@ const DataSourceInfo = () => {
   const fetchDatasets = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/earthdata/datasets');
+      const response = await fetch('http://localhost:5000/api/earthdata/datasets');
       
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -56,7 +56,7 @@ const DataSourceInfo = () => {
 
   const checkAuthStatus = async () => {
     try {
-      const response = await fetch('/api/earthdata/auth/status');
+      const response = await fetch('http://localhost:5000/api/earthdata/auth/status');
       const data = await response.json();
       if (data.success) {
         setAuthStatus(data.data);
