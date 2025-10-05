@@ -20,10 +20,11 @@ import {
 // Importar componentes das abas
 import TelaPrincipal from './TelaPrincipal';
 import MapaInterativo from './MapaInterativo';
-import PrevisaoQualidadeAr from './PrevisaoQualidadeAr';
-import GraficosTendencias from './GraficosTendencias';
-import TelaValidacao from './TelaValidacao';
+import AirQualityForecast from './PrevisaoQualidadeAr';
+import HistoricalTrendsCharts from './GraficosTendencias';
+import ValidationScreen from './TelaValidacao';
 import AlertasSaude from './AlertasSaude';
+import CitySearchBar from './CitySearchBar';
 
 // Utilitário para carregar dados CSV
 import { loadCSVData } from '../../utils/csvLoader';
@@ -59,6 +60,7 @@ const TabsDashboard = () => {
   const [csvData, setCsvData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [selectedCity, setSelectedCity] = useState('New York');
 
   // Carregar dados CSV na inicialização
   useEffect(() => {
@@ -82,35 +84,41 @@ const TabsDashboard = () => {
     setValue(newValue);
   };
 
-  // Definição das abas conforme especificação
+  const handleCityChange = (newCity) => {
+    setSelectedCity(newCity);
+    // Here you could add logic to reload data for the new city
+    console.log('City changed to:', newCity);
+  };
+
+  // Dashboard tabs definition with English labels
   const tabs = [
     {
-      label: 'Tela Principal (Painel de Controle)',
+      label: 'Dashboard',
       icon: <DashboardIcon />,
       component: TelaPrincipal
     },
     {
-      label: 'Mapa Interativo',
+      label: 'Interactive Map',
       icon: <MapIcon />,
       component: MapaInterativo
     },
     {
-      label: 'Previsão de Qualidade do Ar',
+      label: 'Air Quality Forecast',
       icon: <TrendingUp />,
-      component: PrevisaoQualidadeAr
+      component: AirQualityForecast
     },
     {
-      label: 'Gráficos de Tendências Históricas',
+      label: 'Historical Trends Charts',
       icon: <Analytics />,
-      component: GraficosTendencias
+      component: HistoricalTrendsCharts
     },
     {
-      label: 'Tela de Validação (Satélite vs. Solo)',
+      label: 'Validation Screen (Satellite vs. Ground)',
       icon: <Satellite />,
-      component: TelaValidacao
+      component: ValidationScreen
     },
     {
-      label: 'Alertas de Saúde',
+      label: 'Health Alerts',
       icon: <HealthAndSafety />,
       component: AlertasSaude
     }
@@ -118,20 +126,16 @@ const TabsDashboard = () => {
 
   if (loading) {
     return (
-      <Container maxWidth="xl">
-        <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
-          <Typography>Carregando dados...</Typography>
-        </Box>
+      <Container maxWidth="lg" sx={{ py: 4 }}>
+        <Typography>Loading data...</Typography>
       </Container>
     );
   }
 
   if (error) {
     return (
-      <Container maxWidth="xl">
-        <Box sx={{ py: 4 }}>
-          <Alert severity="error">{error}</Alert>
-        </Box>
+      <Container maxWidth="lg" sx={{ py: 4 }}>
+        <Alert severity="error">{error}</Alert>
       </Container>
     );
   }
@@ -141,6 +145,12 @@ const TabsDashboard = () => {
       <Box sx={{ width: '100%' }}>
         {/* Alertas de Saúde - Banner no topo */}
         <AlertasSaude csvData={csvData} />
+        
+        {/* City Search Bar - Above function tabs */}
+        <CitySearchBar 
+          selectedCity={selectedCity}
+          onCityChange={handleCityChange}
+        />
         
         {/* Navegação por abas */}
         <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 2 }}>

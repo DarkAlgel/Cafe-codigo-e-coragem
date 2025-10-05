@@ -41,11 +41,11 @@ import {
 } from '@mui/icons-material';
 import { getTodayDataForCity, getHistoricalData } from '../../utils/csvLoader';
 
-const TelaValidacao = ({ csvData }) => {
+const ValidationScreen = ({ csvData }) => {
   const theme = useTheme();
   const [tabValue, setTabValue] = useState(0);
 
-  // Obter dados para validação
+  // Get data for validation
   const validationData = useMemo(() => {
     const historicalData = getHistoricalData(csvData, 'Nova Iorque', 30) ||
                           getHistoricalData(csvData, 'New York', 30) ||
@@ -54,50 +54,50 @@ const TelaValidacao = ({ csvData }) => {
     if (!historicalData || historicalData.length === 0) return [];
 
     return historicalData.map((item, index) => {
-      const pm25Solo = parseFloat(item['Concentracao_PM2.5_Solo']) || 0;
-      const no2Satelite = parseFloat(item.NO2_Satelite_TEMPO) || 0;
-      const aodSatelite = parseFloat(item.AOD_Satelite_MODIS) || 0;
-      const o3Solo = parseFloat(item.Concentracao_O3_Solo) || 0;
+      const pm25Ground = parseFloat(item['Concentracao_PM2.5_Solo']) || 0;
+      const no2Satellite = parseFloat(item.NO2_Satelite_TEMPO) || 0;
+      const aodSatellite = parseFloat(item.AOD_Satelite_MODIS) || 0;
+      const o3Ground = parseFloat(item.Concentracao_O3_Solo) || 0;
 
-      // Calcular diferenças e correlações
-      const correlationPM25_AOD = pm25Solo * 0.8 + Math.random() * 0.4; // Simulação de correlação
-      const correlationO3_NO2 = o3Solo * 0.7 + Math.random() * 0.6; // Simulação de correlação
+      // Calculate differences and correlations
+      const correlationPM25_AOD = pm25Ground * 0.8 + Math.random() * 0.4; // Correlation simulation
+      const correlationO3_NO2 = o3Ground * 0.7 + Math.random() * 0.6; // Correlation simulation
 
       return {
         day: index + 1,
-        data: item.Data,
-        pm25Solo,
-        no2Satelite,
-        aodSatelite,
-        o3Solo,
+        date: item.Data,
+        pm25Ground,
+        no2Satellite,
+        aodSatellite,
+        o3Ground,
         correlationPM25_AOD,
         correlationO3_NO2,
-        diferenca_PM25_AOD: Math.abs(pm25Solo - correlationPM25_AOD),
-        diferenca_O3_NO2: Math.abs(o3Solo - correlationO3_NO2),
-        cidade: item.Cidade
+        difference_PM25_AOD: Math.abs(pm25Ground - correlationPM25_AOD),
+        difference_O3_NO2: Math.abs(o3Ground - correlationO3_NO2),
+        city: item.Cidade
       };
     });
   }, [csvData]);
 
-  // Estatísticas de validação
+  // Validation statistics
   const validationStats = useMemo(() => {
     if (!validationData || validationData.length === 0) return null;
 
-    const pm25Diffs = validationData.map(d => d.diferenca_PM25_AOD);
-    const o3Diffs = validationData.map(d => d.diferenca_O3_NO2);
+    const pm25Diffs = validationData.map(d => d.difference_PM25_AOD);
+    const o3Diffs = validationData.map(d => d.difference_O3_NO2);
 
     const pm25AvgDiff = pm25Diffs.reduce((a, b) => a + b, 0) / pm25Diffs.length;
     const o3AvgDiff = o3Diffs.reduce((a, b) => a + b, 0) / o3Diffs.length;
 
-    // Calcular correlação (simulada)
+    // Calculate correlation (simulated)
     const pm25Correlation = 0.85 - (pm25AvgDiff * 0.1);
     const o3Correlation = 0.78 - (o3AvgDiff * 0.08);
 
-    // Determinar qualidade da validação
+    // Determine validation quality
     const getValidationQuality = (correlation) => {
-      if (correlation >= 0.8) return { level: 'Excelente', color: 'success', icon: CheckCircle };
-      if (correlation >= 0.6) return { level: 'Boa', color: 'warning', icon: Warning };
-      return { level: 'Precisa Melhorar', color: 'error', icon: Error };
+      if (correlation >= 0.8) return { level: 'Excellent', color: 'success', icon: CheckCircle };
+      if (correlation >= 0.6) return { level: 'Good', color: 'warning', icon: Warning };
+      return { level: 'Needs Improvement', color: 'error', icon: Error };
     };
 
     return {
@@ -115,7 +115,7 @@ const TelaValidacao = ({ csvData }) => {
     };
   }, [validationData]);
 
-  // Tooltip customizado para gráficos de dispersão
+  // Custom tooltip for scatter plots
   const CustomTooltip = ({ active, payload }) => {
     if (active && payload && payload.length) {
       const data = payload[0].payload;
@@ -124,34 +124,34 @@ const TelaValidacao = ({ csvData }) => {
         <Card sx={{ minWidth: 200 }}>
           <CardContent sx={{ p: 2 }}>
             <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 1 }}>
-              Dia {data.day}
+              Day {data.day}
             </Typography>
             <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-              {data.data}
+              {data.date}
             </Typography>
             
             {tabValue === 0 ? (
               <>
                 <Typography variant="body2">
-                  PM2.5 Solo: {data.pm25Solo.toFixed(2)} μg/m³
+                  PM2.5 Ground: {data.pm25Ground.toFixed(2)} μg/m³
                 </Typography>
                 <Typography variant="body2">
-                  AOD Satélite: {data.aodSatelite.toFixed(3)}
+                  AOD Satellite: {data.aodSatellite.toFixed(3)}
                 </Typography>
                 <Typography variant="body2" color="error">
-                  Diferença: {data.diferenca_PM25_AOD.toFixed(2)}
+                  Difference: {data.difference_PM25_AOD.toFixed(2)}
                 </Typography>
               </>
             ) : (
               <>
                 <Typography variant="body2">
-                  O3 Solo: {data.o3Solo.toFixed(2)} μg/m³
+                  O3 Ground: {data.o3Ground.toFixed(2)} μg/m³
                 </Typography>
                 <Typography variant="body2">
-                  NO2 Satélite: {data.no2Satelite.toFixed(2)} mol/cm²
+                  NO2 Satellite: {data.no2Satellite.toFixed(2)} mol/cm²
                 </Typography>
                 <Typography variant="body2" color="error">
-                  Diferença: {data.diferenca_O3_NO2.toFixed(2)}
+                  Difference: {data.difference_O3_NO2.toFixed(2)}
                 </Typography>
               </>
             )}
@@ -166,7 +166,7 @@ const TelaValidacao = ({ csvData }) => {
     return (
       <Box sx={{ textAlign: 'center', py: 4 }}>
         <Typography variant="h6" color="text.secondary">
-          Dados de validação não disponíveis
+          Validation data not available
         </Typography>
       </Box>
     );
@@ -177,15 +177,15 @@ const TelaValidacao = ({ csvData }) => {
       <Box sx={{ textAlign: 'center', mb: 4 }}>
         <CompareArrows sx={{ fontSize: 40, color: 'primary.main', mb: 1 }} />
         <Typography variant="h4" gutterBottom>
-          Tela de Validação
+          Validation Screen
         </Typography>
         <Typography variant="body1" color="text.secondary">
-          Comparação entre dados de Satélite vs. Solo
+          Comparison between Satellite vs. Ground data
         </Typography>
       </Box>
 
       <Grid container spacing={3}>
-        {/* Resumo de Validação */}
+        {/* Validation Summary */}
         <Grid item xs={12}>
           <Grid container spacing={2}>
             <Grid item xs={12} md={6}>
@@ -193,7 +193,7 @@ const TelaValidacao = ({ csvData }) => {
                 <CardContent>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
                     <Terrain color="primary" />
-                    <Typography variant="h6">PM2.5 Solo vs AOD Satélite</Typography>
+                    <Typography variant="h6">PM2.5 Ground vs AOD Satellite</Typography>
                   </Box>
                   
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
@@ -208,7 +208,7 @@ const TelaValidacao = ({ csvData }) => {
                   </Box>
                   
                   <Typography variant="body2" color="text.secondary" gutterBottom>
-                    Correlação: {validationStats?.pm25.correlation}
+                    Correlation: {validationStats?.pm25.correlation}
                   </Typography>
                   <LinearProgress 
                     variant="determinate" 
@@ -217,7 +217,7 @@ const TelaValidacao = ({ csvData }) => {
                     sx={{ mb: 1 }}
                   />
                   <Typography variant="body2" color="text.secondary">
-                    Diferença média: {validationStats?.pm25.avgDiff} μg/m³
+                    Average difference: {validationStats?.pm25.avgDiff} μg/m³
                   </Typography>
                 </CardContent>
               </Card>
@@ -228,7 +228,7 @@ const TelaValidacao = ({ csvData }) => {
                 <CardContent>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
                     <Satellite color="secondary" />
-                    <Typography variant="h6">O3 Solo vs NO2 Satélite</Typography>
+                    <Typography variant="h6">O3 Ground vs NO2 Satellite</Typography>
                   </Box>
                   
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
@@ -243,7 +243,7 @@ const TelaValidacao = ({ csvData }) => {
                   </Box>
                   
                   <Typography variant="body2" color="text.secondary" gutterBottom>
-                    Correlação: {validationStats?.o3.correlation}
+                    Correlation: {validationStats?.o3.correlation}
                   </Typography>
                   <LinearProgress 
                     variant="determinate" 
@@ -252,7 +252,7 @@ const TelaValidacao = ({ csvData }) => {
                     sx={{ mb: 1 }}
                   />
                   <Typography variant="body2" color="text.secondary">
-                    Diferença média: {validationStats?.o3.avgDiff} μg/m³
+                    Average difference: {validationStats?.o3.avgDiff} μg/m³
                   </Typography>
                 </CardContent>
               </Card>
@@ -260,7 +260,7 @@ const TelaValidacao = ({ csvData }) => {
           </Grid>
         </Grid>
 
-        {/* Gráficos de Dispersão */}
+        {/* Scatter Charts */}
         <Grid item xs={12}>
           <Card>
             <CardContent>
@@ -284,35 +284,35 @@ const TelaValidacao = ({ csvData }) => {
                   <CartesianGrid strokeDasharray="3 3" stroke={theme.palette.divider} />
                   <XAxis 
                     type="number" 
-                    dataKey={tabValue === 0 ? "pm25Solo" : "o3Solo"}
-                    name={tabValue === 0 ? "PM2.5 Solo" : "O3 Solo"}
+                    dataKey={tabValue === 0 ? "pm25Ground" : "o3Ground"}
+                    name={tabValue === 0 ? "PM2.5 Ground" : "O3 Ground"}
                     stroke={theme.palette.text.secondary}
                     label={{ 
-                      value: tabValue === 0 ? 'PM2.5 Solo (μg/m³)' : 'O3 Solo (μg/m³)', 
+                      value: tabValue === 0 ? 'PM2.5 Ground (μg/m³)' : 'O3 Ground (μg/m³)', 
                       position: 'insideBottom', 
                       offset: -10 
                     }}
                   />
                   <YAxis 
                     type="number" 
-                    dataKey={tabValue === 0 ? "aodSatelite" : "no2Satelite"}
-                    name={tabValue === 0 ? "AOD Satélite" : "NO2 Satélite"}
+                    dataKey={tabValue === 0 ? "aodSatellite" : "no2Satellite"}
+                    name={tabValue === 0 ? "AOD Satellite" : "NO2 Satellite"}
                     stroke={theme.palette.text.secondary}
                     label={{ 
-                      value: tabValue === 0 ? 'AOD Satélite' : 'NO2 Satélite (mol/cm²)', 
+                      value: tabValue === 0 ? 'AOD Satellite' : 'NO2 Satellite (mol/cm²)', 
                       angle: -90, 
                       position: 'insideLeft' 
                     }}
                   />
                   <Tooltip content={<CustomTooltip />} />
                   
-                  {/* Linha de referência ideal (correlação perfeita) */}
+                  {/* Ideal reference line (perfect correlation) */}
                   <ReferenceLine 
                     segment={[
                       { x: 0, y: 0 }, 
                       { 
-                        x: Math.max(...validationData.map(d => tabValue === 0 ? d.pm25Solo : d.o3Solo)), 
-                        y: Math.max(...validationData.map(d => tabValue === 0 ? d.aodSatelite : d.no2Satelite))
+                        x: Math.max(...validationData.map(d => tabValue === 0 ? d.pm25Ground : d.o3Ground)), 
+                        y: Math.max(...validationData.map(d => tabValue === 0 ? d.aodSatellite : d.no2Satellite))
                       }
                     ]} 
                     stroke={theme.palette.success.main}
@@ -324,7 +324,7 @@ const TelaValidacao = ({ csvData }) => {
                     fill={tabValue === 0 ? theme.palette.primary.main : theme.palette.secondary.main}
                   >
                     {validationData.map((entry, index) => {
-                      const diff = tabValue === 0 ? entry.diferenca_PM25_AOD : entry.diferenca_O3_NO2;
+                      const diff = tabValue === 0 ? entry.difference_PM25_AOD : entry.difference_O3_NO2;
                       const color = diff < 5 ? theme.palette.success.main : 
                                    diff < 10 ? theme.palette.warning.main : 
                                    theme.palette.error.main;
@@ -336,35 +336,35 @@ const TelaValidacao = ({ csvData }) => {
 
               <Alert severity="info" sx={{ mt: 2 }}>
                 <Typography variant="body2">
-                  <strong>Legenda:</strong> 
-                  <Chip size="small" sx={{ mx: 1, bgcolor: theme.palette.success.main, color: 'white' }} label="Boa correlação" />
-                  <Chip size="small" sx={{ mx: 1, bgcolor: theme.palette.warning.main, color: 'white' }} label="Correlação moderada" />
-                  <Chip size="small" sx={{ mx: 1, bgcolor: theme.palette.error.main, color: 'white' }} label="Correlação baixa" />
+                  <strong>Legend:</strong> 
+                  <Chip size="small" sx={{ mx: 1, bgcolor: theme.palette.success.main, color: 'white' }} label="Good correlation" />
+                  <Chip size="small" sx={{ mx: 1, bgcolor: theme.palette.warning.main, color: 'white' }} label="Moderate correlation" />
+                  <Chip size="small" sx={{ mx: 1, bgcolor: theme.palette.error.main, color: 'white' }} label="Low correlation" />
                 </Typography>
               </Alert>
             </CardContent>
           </Card>
         </Grid>
 
-        {/* Tabela de Dados Detalhados */}
+        {/* Detailed Data Table */}
         <Grid item xs={12}>
           <Card>
             <CardContent>
               <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                 <Assessment />
-                Dados Detalhados de Validação
+                Detailed Validation Data
               </Typography>
               
               <TableContainer component={Paper} sx={{ maxHeight: 400 }}>
                 <Table stickyHeader size="small">
                   <TableHead>
                     <TableRow>
-                      <TableCell>Dia</TableCell>
-                      <TableCell>Data</TableCell>
-                      <TableCell align="right">PM2.5 Solo</TableCell>
-                      <TableCell align="right">AOD Satélite</TableCell>
-                      <TableCell align="right">O3 Solo</TableCell>
-                      <TableCell align="right">NO2 Satélite</TableCell>
+                      <TableCell>Day</TableCell>
+                      <TableCell>Date</TableCell>
+                      <TableCell align="right">PM2.5 Ground</TableCell>
+                      <TableCell align="right">AOD Satellite</TableCell>
+                      <TableCell align="right">O3 Ground</TableCell>
+                      <TableCell align="right">NO2 Satellite</TableCell>
                       <TableCell align="right">Diff PM2.5/AOD</TableCell>
                       <TableCell align="right">Diff O3/NO2</TableCell>
                     </TableRow>
@@ -373,25 +373,25 @@ const TelaValidacao = ({ csvData }) => {
                     {validationData.slice(0, 15).map((row) => (
                       <TableRow key={row.day} hover>
                         <TableCell>{row.day}</TableCell>
-                        <TableCell>{row.data}</TableCell>
-                        <TableCell align="right">{row.pm25Solo.toFixed(2)}</TableCell>
-                        <TableCell align="right">{row.aodSatelite.toFixed(3)}</TableCell>
-                        <TableCell align="right">{row.o3Solo.toFixed(2)}</TableCell>
-                        <TableCell align="right">{row.no2Satelite.toFixed(2)}</TableCell>
+                        <TableCell>{row.date}</TableCell>
+                        <TableCell align="right">{row.pm25Ground.toFixed(2)}</TableCell>
+                        <TableCell align="right">{row.aodSatellite.toFixed(3)}</TableCell>
+                        <TableCell align="right">{row.o3Ground.toFixed(2)}</TableCell>
+                        <TableCell align="right">{row.no2Satellite.toFixed(2)}</TableCell>
                         <TableCell align="right">
                           <Chip 
                             size="small"
-                            label={row.diferenca_PM25_AOD.toFixed(2)}
-                            color={row.diferenca_PM25_AOD < 5 ? 'success' : 
-                                   row.diferenca_PM25_AOD < 10 ? 'warning' : 'error'}
+                            label={row.difference_PM25_AOD.toFixed(2)}
+                            color={row.difference_PM25_AOD < 5 ? 'success' : 
+                                   row.difference_PM25_AOD < 10 ? 'warning' : 'error'}
                           />
                         </TableCell>
                         <TableCell align="right">
                           <Chip 
                             size="small"
-                            label={row.diferenca_O3_NO2.toFixed(2)}
-                            color={row.diferenca_O3_NO2 < 5 ? 'success' : 
-                                   row.diferenca_O3_NO2 < 10 ? 'warning' : 'error'}
+                            label={row.difference_O3_NO2.toFixed(2)}
+                            color={row.difference_O3_NO2 < 5 ? 'success' : 
+                                   row.difference_O3_NO2 < 10 ? 'warning' : 'error'}
                           />
                         </TableCell>
                       </TableRow>
@@ -402,7 +402,7 @@ const TelaValidacao = ({ csvData }) => {
               
               {validationData.length > 15 && (
                 <Typography variant="body2" color="text.secondary" sx={{ mt: 1, textAlign: 'center' }}>
-                  Mostrando primeiros 15 de {validationData.length} registros
+                  Showing first 15 of {validationData.length} records
                 </Typography>
               )}
             </CardContent>
@@ -413,4 +413,4 @@ const TelaValidacao = ({ csvData }) => {
   );
 };
 
-export default TelaValidacao;
+export default ValidationScreen;

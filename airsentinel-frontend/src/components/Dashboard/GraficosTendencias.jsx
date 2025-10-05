@@ -23,12 +23,12 @@ import {
 import { Analytics, WaterDrop, Thermostat } from '@mui/icons-material';
 import { getHistoricalData } from '../../utils/csvLoader';
 
-const GraficosTendencias = ({ csvData }) => {
+const HistoricalTrendsCharts = ({ csvData }) => {
   const theme = useTheme();
-  const [showPrecipitacao, setShowPrecipitacao] = useState(false);
-  const [showTemperatura, setShowTemperatura] = useState(false);
+  const [showPrecipitation, setShowPrecipitation] = useState(false);
+  const [showTemperature, setShowTemperature] = useState(false);
 
-  // Obter dados históricos dos últimos 30 dias
+  // Get historical data for the last 30 days
   const historicalData = useMemo(() => {
     const rawData = getHistoricalData(csvData, 'Nova Iorque', 30) ||
                     getHistoricalData(csvData, 'New York', 30) ||
@@ -37,17 +37,17 @@ const GraficosTendencias = ({ csvData }) => {
     if (!rawData || rawData.length === 0) return [];
 
     return rawData.map((item, index) => ({
-      day: `Dia ${index + 1}`,
-      data: item.Data || `Dia ${index + 1}`,
+      day: `Day ${index + 1}`,
+      date: item.Data || `Day ${index + 1}`,
       aqi: parseInt(item.AQI_Final) || 0,
-      precipitacao: parseFloat(item.Precipitacao_mm) || 0,
-      temperatura: parseFloat(item.Temperatura_C) || 0,
-      poluente: item.Poluente_Dominante || 'N/A',
-      cidade: item.Cidade || 'Nova Iorque'
+      precipitation: parseFloat(item.Precipitacao_mm) || 0,
+      temperature: parseFloat(item.Temperatura_C) || 0,
+      pollutant: item.Poluente_Dominante || 'N/A',
+      city: item.Cidade || 'New York'
     }));
   }, [csvData]);
 
-  // Tooltip customizado
+  // Custom tooltip
   const CustomTooltip = ({ active, payload, label }) => {
     if (active && payload && payload.length) {
       const data = payload[0].payload;
@@ -59,7 +59,7 @@ const GraficosTendencias = ({ csvData }) => {
               {label}
             </Typography>
             <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-              {data.data}
+              {data.date}
             </Typography>
             
             {payload.map((entry, index) => (
@@ -75,14 +75,14 @@ const GraficosTendencias = ({ csvData }) => {
                 <Typography variant="body2">
                   {entry.name}: {entry.value}
                   {entry.dataKey === 'aqi' ? '' : 
-                   entry.dataKey === 'temperatura' ? '°C' : 
-                   entry.dataKey === 'precipitacao' ? 'mm' : ''}
+                   entry.dataKey === 'temperature' ? '°C' : 
+                   entry.dataKey === 'precipitation' ? 'mm' : ''}
                 </Typography>
               </Box>
             ))}
             
             <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-              Poluente: {data.poluente}
+              Pollutant: {data.pollutant}
             </Typography>
           </CardContent>
         </Card>
@@ -95,17 +95,17 @@ const GraficosTendencias = ({ csvData }) => {
     return (
       <Box sx={{ textAlign: 'center', py: 4 }}>
         <Typography variant="h6" color="text.secondary">
-          Dados históricos não disponíveis
+          Historical data not available
         </Typography>
       </Box>
     );
   }
 
-  // Estatísticas básicas
+  // Basic statistics
   const stats = useMemo(() => {
     const aqiValues = historicalData.map(d => d.aqi);
-    const precipValues = historicalData.map(d => d.precipitacao);
-    const tempValues = historicalData.map(d => d.temperatura);
+    const precipValues = historicalData.map(d => d.precipitation);
+    const tempValues = historicalData.map(d => d.temperature);
 
     return {
       aqi: {
@@ -113,12 +113,12 @@ const GraficosTendencias = ({ csvData }) => {
         max: Math.max(...aqiValues),
         min: Math.min(...aqiValues)
       },
-      precipitacao: {
+      precipitation: {
         total: precipValues.reduce((a, b) => a + b, 0).toFixed(1),
         max: Math.max(...precipValues),
         avg: (precipValues.reduce((a, b) => a + b, 0) / precipValues.length).toFixed(1)
       },
-      temperatura: {
+      temperature: {
         avg: (tempValues.reduce((a, b) => a + b, 0) / tempValues.length).toFixed(1),
         max: Math.max(...tempValues),
         min: Math.min(...tempValues)
@@ -131,55 +131,55 @@ const GraficosTendencias = ({ csvData }) => {
       <Box sx={{ textAlign: 'center', mb: 4 }}>
         <Analytics sx={{ fontSize: 40, color: 'primary.main', mb: 1 }} />
         <Typography variant="h4" gutterBottom>
-          Gráficos de Tendências Históricas
+          Historical Trends Charts
         </Typography>
         <Typography variant="body1" color="text.secondary">
-          Últimos {historicalData.length} dias - {historicalData[0]?.cidade}
+          Last {historicalData.length} days - {historicalData[0]?.city}
         </Typography>
       </Box>
 
       <Grid container spacing={3}>
-        {/* Controles para séries adicionais */}
+        {/* Controls for additional series */}
         <Grid item xs={12}>
           <Card>
             <CardContent>
               <Typography variant="h6" gutterBottom>
-                Séries de Dados
+                Data Series
               </Typography>
               <Box sx={{ display: 'flex', gap: 3, flexWrap: 'wrap' }}>
                 <Chip
                   icon={<Analytics />}
-                  label="AQI (sempre visível)"
+                  label="AQI (always visible)"
                   color="primary"
                   variant="filled"
                 />
                 <FormControlLabel
                   control={
                     <Switch
-                      checked={showPrecipitacao}
-                      onChange={(e) => setShowPrecipitacao(e.target.checked)}
+                      checked={showPrecipitation}
+                      onChange={(e) => setShowPrecipitation(e.target.checked)}
                       color="info"
                     />
                   }
                   label={
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                       <WaterDrop color="info" />
-                      Precipitação (mm)
+                      Precipitation (mm)
                     </Box>
                   }
                 />
                 <FormControlLabel
                   control={
                     <Switch
-                      checked={showTemperatura}
-                      onChange={(e) => setShowTemperatura(e.target.checked)}
+                      checked={showTemperature}
+                      onChange={(e) => setShowTemperature(e.target.checked)}
                       color="warning"
                     />
                   }
                   label={
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                       <Thermostat color="warning" />
-                      Temperatura (°C)
+                      Temperature (°C)
                     </Box>
                   }
                 />
@@ -188,12 +188,12 @@ const GraficosTendencias = ({ csvData }) => {
           </Card>
         </Grid>
 
-        {/* Gráfico principal */}
+        {/* Main chart */}
         <Grid item xs={12}>
           <Card>
             <CardContent>
               <Typography variant="h6" gutterBottom sx={{ mb: 3 }}>
-                Evolução Temporal
+                Temporal Evolution
               </Typography>
               
               <ResponsiveContainer width="100%" height={500}>
@@ -211,20 +211,20 @@ const GraficosTendencias = ({ csvData }) => {
                     fontSize={12}
                     label={{ value: 'AQI', angle: -90, position: 'insideLeft' }}
                   />
-                  {(showPrecipitacao || showTemperatura) && (
+                  {(showPrecipitation || showTemperature) && (
                     <YAxis 
                       yAxisId="right"
                       orientation="right"
                       stroke={theme.palette.text.secondary}
                       fontSize={12}
-                      label={{ value: showTemperatura ? '°C / mm' : 'mm', angle: 90, position: 'insideRight' }}
+                      label={{ value: showTemperature ? '°C / mm' : 'mm', angle: 90, position: 'insideRight' }}
                     />
                   )}
                   
                   <Tooltip content={<CustomTooltip />} />
                   <Legend />
                   
-                  {/* Linha principal do AQI */}
+                  {/* Main AQI line */}
                   <Line
                     yAxisId="left"
                     type="monotone"
@@ -235,31 +235,31 @@ const GraficosTendencias = ({ csvData }) => {
                     name="AQI"
                   />
                   
-                  {/* Linha de precipitação (condicional) */}
-                  {showPrecipitacao && (
+                  {/* Precipitation line (conditional) */}
+                  {showPrecipitation && (
                     <Line
                       yAxisId="right"
                       type="monotone"
-                      dataKey="precipitacao"
+                      dataKey="precipitation"
                       stroke={theme.palette.info.main}
                       strokeWidth={2}
                       dot={{ fill: theme.palette.info.main, strokeWidth: 1, r: 3 }}
                       strokeDasharray="5 5"
-                      name="Precipitação (mm)"
+                      name="Precipitation (mm)"
                     />
                   )}
                   
-                  {/* Linha de temperatura (condicional) */}
-                  {showTemperatura && (
+                  {/* Temperature line (conditional) */}
+                  {showTemperature && (
                     <Line
                       yAxisId="right"
                       type="monotone"
-                      dataKey="temperatura"
+                      dataKey="temperature"
                       stroke={theme.palette.warning.main}
                       strokeWidth={2}
                       dot={{ fill: theme.palette.warning.main, strokeWidth: 1, r: 3 }}
                       strokeDasharray="10 5"
-                      name="Temperatura (°C)"
+                      name="Temperature (°C)"
                     />
                   )}
                 </LineChart>
@@ -268,10 +268,10 @@ const GraficosTendencias = ({ csvData }) => {
           </Card>
         </Grid>
 
-        {/* Estatísticas resumidas */}
+        {/* Summary statistics */}
         <Grid item xs={12}>
           <Grid container spacing={2}>
-            {/* Estatísticas AQI */}
+            {/* AQI statistics */}
             <Grid item xs={12} md={4}>
               <Card>
                 <CardContent>
@@ -281,15 +281,15 @@ const GraficosTendencias = ({ csvData }) => {
                   </Box>
                   <Grid container spacing={1}>
                     <Grid item xs={4}>
-                      <Typography variant="body2" color="text.secondary">Média</Typography>
+                      <Typography variant="body2" color="text.secondary">Average</Typography>
                       <Typography variant="h6" color="primary">{stats.aqi.avg}</Typography>
                     </Grid>
                     <Grid item xs={4}>
-                      <Typography variant="body2" color="text.secondary">Máximo</Typography>
+                      <Typography variant="body2" color="text.secondary">Maximum</Typography>
                       <Typography variant="h6" color="error">{stats.aqi.max}</Typography>
                     </Grid>
                     <Grid item xs={4}>
-                      <Typography variant="body2" color="text.secondary">Mínimo</Typography>
+                      <Typography variant="body2" color="text.secondary">Minimum</Typography>
                       <Typography variant="h6" color="success">{stats.aqi.min}</Typography>
                     </Grid>
                   </Grid>
@@ -297,52 +297,52 @@ const GraficosTendencias = ({ csvData }) => {
               </Card>
             </Grid>
 
-            {/* Estatísticas Precipitação */}
+            {/* Precipitation statistics */}
             <Grid item xs={12} md={4}>
-              <Card sx={{ opacity: showPrecipitacao ? 1 : 0.6 }}>
+              <Card sx={{ opacity: showPrecipitation ? 1 : 0.6 }}>
                 <CardContent>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
                     <WaterDrop color="info" />
-                    <Typography variant="h6">Precipitação</Typography>
+                    <Typography variant="h6">Precipitation</Typography>
                   </Box>
                   <Grid container spacing={1}>
                     <Grid item xs={4}>
                       <Typography variant="body2" color="text.secondary">Total</Typography>
-                      <Typography variant="h6" color="info">{stats.precipitacao.total}mm</Typography>
+                      <Typography variant="h6" color="info">{stats.precipitation.total}mm</Typography>
                     </Grid>
                     <Grid item xs={4}>
-                      <Typography variant="body2" color="text.secondary">Máximo</Typography>
-                      <Typography variant="h6" color="info">{stats.precipitacao.max}mm</Typography>
+                      <Typography variant="body2" color="text.secondary">Maximum</Typography>
+                      <Typography variant="h6" color="info">{stats.precipitation.max}mm</Typography>
                     </Grid>
                     <Grid item xs={4}>
-                      <Typography variant="body2" color="text.secondary">Média</Typography>
-                      <Typography variant="h6" color="info">{stats.precipitacao.avg}mm</Typography>
+                      <Typography variant="body2" color="text.secondary">Average</Typography>
+                      <Typography variant="h6" color="info">{stats.precipitation.avg}mm</Typography>
                     </Grid>
                   </Grid>
                 </CardContent>
               </Card>
             </Grid>
 
-            {/* Estatísticas Temperatura */}
+            {/* Temperature statistics */}
             <Grid item xs={12} md={4}>
-              <Card sx={{ opacity: showTemperatura ? 1 : 0.6 }}>
+              <Card sx={{ opacity: showTemperature ? 1 : 0.6 }}>
                 <CardContent>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
                     <Thermostat color="warning" />
-                    <Typography variant="h6">Temperatura</Typography>
+                    <Typography variant="h6">Temperature</Typography>
                   </Box>
                   <Grid container spacing={1}>
                     <Grid item xs={4}>
-                      <Typography variant="body2" color="text.secondary">Média</Typography>
-                      <Typography variant="h6" color="warning">{stats.temperatura.avg}°C</Typography>
+                      <Typography variant="body2" color="text.secondary">Average</Typography>
+                      <Typography variant="h6" color="warning">{stats.temperature.avg}°C</Typography>
                     </Grid>
                     <Grid item xs={4}>
-                      <Typography variant="body2" color="text.secondary">Máximo</Typography>
-                      <Typography variant="h6" color="error">{stats.temperatura.max}°C</Typography>
+                      <Typography variant="body2" color="text.secondary">Maximum</Typography>
+                      <Typography variant="h6" color="error">{stats.temperature.max}°C</Typography>
                     </Grid>
                     <Grid item xs={4}>
-                      <Typography variant="body2" color="text.secondary">Mínimo</Typography>
-                      <Typography variant="h6" color="info">{stats.temperatura.min}°C</Typography>
+                      <Typography variant="body2" color="text.secondary">Minimum</Typography>
+                      <Typography variant="h6" color="info">{stats.temperature.min}°C</Typography>
                     </Grid>
                   </Grid>
                 </CardContent>
@@ -355,4 +355,4 @@ const GraficosTendencias = ({ csvData }) => {
   );
 };
 
-export default GraficosTendencias;
+export default HistoricalTrendsCharts;

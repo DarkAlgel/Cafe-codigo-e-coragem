@@ -28,7 +28,8 @@ import {
   Settings,
   Logout,
   Air,
-  Group
+  Group,
+  Home
 } from '@mui/icons-material';
 import { authService } from '../../services/api';
 
@@ -59,7 +60,7 @@ const Navbar = () => {
   };
 
   const menuItems = [
-    { text: 'Dashboard', icon: <Dashboard />, path: '/' },
+    { text: 'Home', icon: <Home />, path: '/' },
     { text: 'Predictions', icon: <TrendingUp />, path: '/predictions' },
     { text: 'Health', icon: <HealthAndSafety />, path: '/health' },
     { text: 'Alerts', icon: <Notifications />, path: '/alerts' },

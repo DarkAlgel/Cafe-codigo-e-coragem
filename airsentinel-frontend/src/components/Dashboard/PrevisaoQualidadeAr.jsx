@@ -20,31 +20,32 @@ import {
 import { TrendingUp } from '@mui/icons-material';
 import { getNextDaysData, getAQICategory } from '../../utils/csvLoader';
 
-const PrevisaoQualidadeAr = ({ csvData }) => {
+const AirQualityForecast = ({ csvData }) => {
   const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
 
-  // Obter dados dos próximos 3 dias para Nova Iorque
-  const previsaoData = useMemo(() => {
+  // Get next 3 days data for New York
+  const forecastData = useMemo(() => {
     const rawData = getNextDaysData(csvData, 'Nova Iorque', 3) ||
-                    getNextDaysData(csvData, 'New York', 3) ||
-                    getNextDaysData(csvData, 'Sedona', 3); // Fallback
+                   getNextDaysData(csvData, 'New York', 3) ||
+                   getNextDaysData(csvData, 'Sedona', 3); // Fallback
 
     if (!rawData || rawData.length === 0) return [];
 
     return rawData.map((item, index) => {
-      const labels = ['Hoje', 'Amanhã', 'Depois de Amanhã'];
+      const labels = ['Today', 'Tomorrow', 'Day After Tomorrow'];
       return {
-        day: labels[index] || `Dia ${index + 1}`,
+        day: labels[index] || `Day ${index + 1}`,
         aqi: parseInt(item.AQI_Final) || 0,
-        data: item.Data || `Dia ${index + 1}`,
-        poluente: item.Poluente_Dominante || 'N/A',
-        temperatura: item.Temperatura_C || null,
-        cidade: item.Cidade || 'Nova Iorque'
+        date: item.Data || `Day ${index + 1}`,
+        pollutant: item.Poluente_Dominante || 'N/A',
+        temperature: item.Temperatura_C || null,
+        city: item.Cidade || 'New York'
       };
     });
   }, [csvData]);
 
-  // Tooltip customizado
+  // Custom tooltip for chart
   const CustomTooltip = ({ active, payload, label }) => {
     if (active && payload && payload.length) {
       const data = payload[0].payload;
@@ -57,7 +58,7 @@ const PrevisaoQualidadeAr = ({ csvData }) => {
               {label}
             </Typography>
             <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-              {data.data}
+              {data.date}
             </Typography>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
               <Box
@@ -76,11 +77,11 @@ const PrevisaoQualidadeAr = ({ csvData }) => {
               {category}
             </Typography>
             <Typography variant="body2" color="text.secondary">
-              Poluente: {data.poluente}
+              Pollutant: {data.pollutant}
             </Typography>
-            {data.temperatura && (
+            {data.temperature && (
               <Typography variant="body2" color="text.secondary">
-                Temperatura: {data.temperatura}°C
+                Temperature: {data.temperature}°C
               </Typography>
             )}
           </CardContent>
@@ -90,11 +91,11 @@ const PrevisaoQualidadeAr = ({ csvData }) => {
     return null;
   };
 
-  if (!previsaoData || previsaoData.length === 0) {
+  if (!forecastData || forecastData.length === 0) {
     return (
       <Box sx={{ textAlign: 'center', py: 4 }}>
         <Typography variant="h6" color="text.secondary">
-          Dados de previsão não disponíveis
+          Forecast data not available
         </Typography>
       </Box>
     );
@@ -105,24 +106,24 @@ const PrevisaoQualidadeAr = ({ csvData }) => {
       <Box sx={{ textAlign: 'center', mb: 4 }}>
         <TrendingUp sx={{ fontSize: 40, color: 'primary.main', mb: 1 }} />
         <Typography variant="h4" gutterBottom>
-          Previsão de Qualidade do Ar
+          Air Quality Forecast
         </Typography>
         <Typography variant="body1" color="text.secondary">
-          Próximos 3 dias - {previsaoData[0]?.cidade}
+          Next 3 days - {forecastData[0]?.city}
         </Typography>
       </Box>
 
       <Grid container spacing={3}>
-        {/* Gráfico principal */}
+        {/* Main chart */}
         <Grid item xs={12}>
           <Card>
             <CardContent>
               <Typography variant="h6" gutterBottom sx={{ mb: 3 }}>
-                Evolução do AQI
+                AQI Trend
               </Typography>
               
-              <ResponsiveContainer width="100%" height={400}>
-                <LineChart data={previsaoData} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
+              <ResponsiveContainer width="100%" height={300}>
+                <LineChart data={forecastData} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke={theme.palette.divider} />
                   <XAxis 
                     dataKey="day" 
@@ -132,10 +133,9 @@ const PrevisaoQualidadeAr = ({ csvData }) => {
                   <YAxis 
                     stroke={theme.palette.text.secondary}
                     fontSize={12}
-                    label={{ value: 'AQI', angle: -90, position: 'insideLeft' }}
                   />
                   
-                  {/* Linhas de referência para categorias AQI */}
+                  {/* Reference lines for AQI categories */}
                   <ReferenceLine y={50} stroke="#4CAF50" strokeDasharray="2 2" />
                   <ReferenceLine y={100} stroke="#FFEB3B" strokeDasharray="2 2" />
                   <ReferenceLine y={150} stroke="#FF9800" strokeDasharray="2 2" />
@@ -157,10 +157,10 @@ const PrevisaoQualidadeAr = ({ csvData }) => {
           </Card>
         </Grid>
 
-        {/* Cards de resumo para cada dia */}
+        {/* Summary cards for each day */}
         <Grid item xs={12}>
           <Grid container spacing={2}>
-            {previsaoData.map((item, index) => {
+            {forecastData.map((item, index) => {
               const { category, color } = getAQICategory(item.aqi);
               
               return (
@@ -176,7 +176,7 @@ const PrevisaoQualidadeAr = ({ csvData }) => {
                         {item.day}
                       </Typography>
                       <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                        {item.data}
+                        {item.date}
                       </Typography>
                       
                       <Typography
@@ -202,12 +202,12 @@ const PrevisaoQualidadeAr = ({ csvData }) => {
                       </Typography>
                       
                       <Typography variant="body2" color="text.secondary">
-                        Poluente: {item.poluente}
+                        Pollutant: {item.pollutant}
                       </Typography>
                       
-                      {item.temperatura && (
+                      {item.temperature && (
                         <Typography variant="body2" color="text.secondary">
-                          Temp: {item.temperatura}°C
+                          Temp: {item.temperature}°C
                         </Typography>
                       )}
                     </CardContent>
@@ -259,4 +259,4 @@ const PrevisaoQualidadeAr = ({ csvData }) => {
   );
 };
 
-export default PrevisaoQualidadeAr;
+export default AirQualityForecast;
