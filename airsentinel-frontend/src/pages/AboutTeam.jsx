@@ -8,16 +8,14 @@ import {
   Grid,
   Avatar,
   Chip,
-  Paper,
-  Link
+  Paper
 } from '@mui/material';
 import {
   Group,
   Science,
   Analytics,
   CloudQueue,
-  TrendingUp,
-  Assignment
+  TrendingUp
 } from '@mui/icons-material';
 import styles from './AboutTeam.module.css';
 
@@ -101,10 +99,6 @@ const AboutTeam = () => {
       {/* Team Section */}
       <Card className={styles.card}>
         <CardContent className={styles.cardContent}>
-          <Typography variant="h4" gutterBottom className={styles.sectionTitle}>
-            <Group className={styles.sectionIcon} />
-            Team
-          </Typography>
           
           <Grid container spacing={3}>
             {teamMembers.map((member, index) => (
@@ -187,25 +181,6 @@ const AboutTeam = () => {
         </CardContent>
       </Card>
     </Container>
-
-    {/* Footer */}
-    <Box className={styles.footer}>
-      <Container maxWidth="lg">
-        <Typography variant="body2" className={styles.footerText}>
-          <Link 
-            href="https://www.spaceappschallenge.org/" 
-            target="_blank" 
-            rel="noopener noreferrer"
-            className={styles.footerLink}
-          >
-            NASA Space Apps Challenge 2024
-          </Link>
-        </Typography>
-        <Typography variant="body2" className={styles.footerText}>
-          Air Sentinel - Monitoring air quality with NASA data and Machine Learning
-        </Typography>
-      </Container>
-    </Box>
     </>
   );
 };

@@ -32,7 +32,7 @@ import {
 } from '@mui/icons-material';
 import { authService } from '../../services/api';
 
-const Header = () => {
+const Navbar = () => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [mobileOpen, setMobileOpen] = useState(false);
   const location = useLocation();
@@ -236,4 +236,4 @@ const Header = () => {
   );
 };
 
-export default Header;
+export default Navbar;

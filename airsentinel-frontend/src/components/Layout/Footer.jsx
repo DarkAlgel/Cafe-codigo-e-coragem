@@ -29,10 +29,13 @@ const Footer = () => {
         color: 'white',
         py: 4,
         mt: 'auto',
-        borderTop: '1px solid rgba(255, 255, 255, 0.1)'
+        borderTop: '1px solid rgba(255, 255, 255, 0.1)',
+        width: '100%',
+        position: 'relative',
+        bottom: 0
       }}
     >
-      <Container maxWidth="lg">
+      <Container maxWidth={false} sx={{ px: 4 }}>
         <Grid container spacing={4}>
           {/* Project Info */}
           <Grid item xs={12} md={4}>

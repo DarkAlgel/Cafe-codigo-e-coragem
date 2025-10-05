@@ -1,11 +1,12 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
-import { CssBaseline, Box } from '@mui/material';
-import Layout from './components/Layout/Layout';
+import { CssBaseline, Box, Container, useTheme, useMediaQuery } from '@mui/material';
+import Navbar from './components/Layout/Navbar';
+import Footer from './components/Layout/Footer';
 import Dashboard from './pages/Dashboard';
 import AboutTeam from './pages/AboutTeam';
-import { authService } from './services/api';
+import './App.css';
 
 // Tema personalizado do Air Sentinel
 const theme = createTheme({
@@ -74,6 +75,50 @@ const theme = createTheme({
   },
 });
 
+// Componente de layout principal
+const MainLayout = ({ children }) => {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+
+  return (
+    <Box sx={{ 
+      display: 'flex', 
+      flexDirection: 'column', 
+      minHeight: '100vh',
+      width: '100%'
+    }}>
+      <Navbar />
+      
+      <Box
+        component="main"
+        sx={{
+          flexGrow: 1,
+          pt: { xs: 8, sm: 9 }, // Espaço para o header fixo
+          pb: 2,
+          backgroundColor: '#f5f5f5',
+          width: '100%',
+          display: 'flex',
+          flexDirection: 'column'
+        }}
+      >
+        <Container 
+          maxWidth="xl" 
+          sx={{ 
+            px: { xs: 1, sm: 2, md: 3 },
+            flexGrow: 1,
+            display: 'flex',
+            flexDirection: 'column'
+          }}
+        >
+          {children}
+        </Container>
+      </Box>
+      
+      <Footer />
+    </Box>
+  );
+};
+
 // Componente de rota protegida (placeholder)
 const ProtectedRoute = ({ children }) => {
   // Por enquanto, sempre permite acesso para desenvolvimento
@@ -138,49 +183,49 @@ function App() {
           {/* Rotas protegidas com layout */}
           <Route path="/" element={
             <ProtectedRoute>
-              <Layout>
+              <MainLayout>
                 <Dashboard />
-              </Layout>
+              </MainLayout>
             </ProtectedRoute>
           } />
           
           <Route path="/predictions" element={
             <ProtectedRoute>
-              <Layout>
+              <MainLayout>
                 <PredictionsPage />
-              </Layout>
+              </MainLayout>
             </ProtectedRoute>
           } />
           
           <Route path="/health" element={
             <ProtectedRoute>
-              <Layout>
+              <MainLayout>
                 <HealthPage />
-              </Layout>
+              </MainLayout>
             </ProtectedRoute>
           } />
           
           <Route path="/alerts" element={
             <ProtectedRoute>
-              <Layout>
+              <MainLayout>
                 <AlertsPage />
-              </Layout>
+              </MainLayout>
             </ProtectedRoute>
           } />
           
           <Route path="/profile" element={
             <ProtectedRoute>
-              <Layout>
+              <MainLayout>
                 <ProfilePage />
-              </Layout>
+              </MainLayout>
             </ProtectedRoute>
           } />
           
           <Route path="/about-team" element={
             <ProtectedRoute>
-              <Layout>
+              <MainLayout>
                 <AboutTeam />
-              </Layout>
+              </MainLayout>
             </ProtectedRoute>
           } />
           
