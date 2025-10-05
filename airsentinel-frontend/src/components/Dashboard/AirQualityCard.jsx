@@ -21,7 +21,7 @@ const AirQualityCard = ({
 
   if (loading) {
     return (
-      <Card sx={{ height: compact ? 200 : 280, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <Card sx={{ height: compact ? 280 : 380, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <CircularProgress />
       </Card>
     );
@@ -29,7 +29,7 @@ const AirQualityCard = ({
 
   if (error) {
     return (
-      <Card sx={{ height: compact ? 200 : 280, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <Card sx={{ height: compact ? 280 : 380, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <Typography color="error">Error loading data</Typography>
       </Card>
     );
@@ -37,7 +37,7 @@ const AirQualityCard = ({
 
   if (!data) {
     return (
-      <Card sx={{ height: compact ? 200 : 280, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <Card sx={{ height: compact ? 280 : 380, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <Typography color="textSecondary">Data not available</Typography>
       </Card>
     );
@@ -73,7 +73,7 @@ const AirQualityCard = ({
   return (
     <Card 
       sx={{ 
-        height: compact ? 200 : 280,
+        height: compact ? 280 : 380,
         background: `linear-gradient(135deg, ${aqiColor}15 0%, ${aqiColor}05 100%)`,
         border: `2px solid ${aqiColor}30`,
         position: 'relative',
@@ -100,8 +100,8 @@ const AirQualityCard = ({
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
           <Box
             sx={{
-              width: compact ? 60 : 80,
-              height: compact ? 60 : 80,
+              width: compact ? 80 : 100,
+              height: compact ? 80 : 100,
               borderRadius: '50%',
               backgroundColor: aqiColor,
               display: 'flex',
@@ -109,7 +109,7 @@ const AirQualityCard = ({
               justifyContent: 'center',
               color: 'white',
               fontWeight: 'bold',
-              fontSize: compact ? '1.5rem' : '2rem',
+              fontSize: compact ? '1.8rem' : '2.4rem',
               boxShadow: `0 4px 12px ${aqiColor}40`
             }}
           >
