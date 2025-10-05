@@ -1,119 +1,124 @@
-Perfeito — vasculhei o site do Pandora da NASA e os links oficiais que ele fornece. O próprio site não expõe uma API própria; ele aponta para a Pandonia Global Network (PGN), onde há (1) um repositório HTTP aberto com os arquivos de dados e (2) uma API programática (FastAPI) usada pelos visores BlickV/BlickM.
+NO DASHBOARD COM GUIAS (ABAS), SEM ALTERAR A ESTRUTURA PEDIDA. NÃO RENOMEIE, NÃO REORDENE, NÃO CRIE NEM REMOVA ITENS. APENAS IMPLEMENTE EXATAMENTE COMO ABAIXO.
 
-Onde estão os dados e APIs
+### Dados (virão de um CSV)
+Colunas esperadas: AQI_Final, Poluente_Dominante, Cidade, Data, Precipitacao_mm, Temperatura_C, Concentracao_PM2.5_Solo, AOD_Satelite_MODIS.
+Use o CSV local; não chame APIs externas.
+**Exceção**: a **Aba 5 – Tela de Validação (Satélite vs. Solo)** deve obter seus dados via **API interna** que lê diretamente o arquivo **`airsentinel-api\data\dados_completos_NASA_aqi.csv`** no servidor. Esta API apenas lê esse arquivo e retorna os campos necessários; não alterar a origem nem o caminho.
 
-Repositório aberto de arquivos (HTTP) – PGN Data
+### Regras gerais
+- Interface em 6 abas, nesta ordem e com estes títulos:
+  1) Tela Principal (Painel de Controle)
+  2) Mapa Interativo
+  3) Previsão de Qualidade do Ar
+  4) Gráficos de Tendências Históricas
+  5) Tela de Validação (Satélite vs. Solo)
+  6) Alertas de Saúde
+- Não altere textos de títulos das abas.
+- Tipografia clara e responsiva; contraste suficiente; tooltips quando aplicável.
+- Onde mencionar “hoje”, use a primeira linha do CSV da cidade correspondente (ver instruções de cada aba).
+- Categorias AQI (para rótulos e cores): 
+  0–50: “Bom” (Verde) | 51–100: “Moderado” (Amarelo) | 101–150: “Insalubre p/ grupos sensíveis” (Laranja) | 151–200: “Insalubre” (Vermelho) | 201–300: “Muito insalubre” (Roxo) | 301–500: “Perigoso” (Vinho).
+- Paleta: use a cor da categoria do AQI sempre que a especificação pedir “cor do AQI”.
+- Sempre exiba unidades quando fizer sentido (ex.: “°C”, “mm”).
 
-O site do Pandora indica explicitamente que “os dados dos instrumentos PGN podem ser acessados em data.pandonia-global-network.org”. 
-Pandora
+---
 
-Esse endereço serve pastas navegáveis por localidade e por nível (L0/L1/L2/L2Fit). Ex.: /AtlantaGA-Downtown/Pandora92s1/L2/ com arquivos .txt de produtos L2. 
-Pandonia Global Network Data
-+2
-Hetzner Pandonia Global Network
-+2
+## 1) Tela Principal (Painel de Controle)
+**Objetivo:** entregar a informação mais importante em < 5s.
 
-A própria página “Versions” do Pandora explica as siglas dos produtos (ex.: nvs0 = NO₂ coluna total, out0 = O₃ coluna total etc.), úteis para identificar os arquivos. 
-Pandora
+**Dados a usar:** AQI_Final, Poluente_Dominante, Cidade.
 
-API programática – LuftBlick Backend (FastAPI)
+**Como usar:**
+- Filtre o CSV para Cidade = "Nova Iorque" e pegue **a primeira linha** para simular “hoje”.
+- Mostre o **AQI_Final** em fonte **bem grande** (destaque central).
+- **Cor de fundo** do card principal = cor da categoria do AQI de hoje (usar a tabela de categorias acima).
+- **Texto da categoria**: logo abaixo do número grande, mostrar o nível (ex.: “Bom”, “Moderado”, etc.).
+- **Info adicional (menor)**: “Poluente principal hoje: <Poluente_Dominante>”.
 
-A infraestrutura da PGN disponibiliza uma Swagger UI pública do backend “LuftBlick” (ambiente Hetzner). A página lista endpoints como POST /token (autenticação), GET /files (lista de arquivos) e POST /query/get_day (consulta de um dia, com opção “Get BlickV Data Compressed”). 
-FastAPI Pandonia
+Entrega visual mínima: número grande, rótulo de categoria, texto do poluente.
 
-No site da PGN você também encontra os links para BlickV (visualização) e BlickM (mapa), que consomem esses serviços. 
-Pandonia Global Network
+---
 
-Para entender o formato dos arquivos/variáveis (colunas, flags, produtos), use o “PGN Data Products Readme” mais recente (jan/2025). 
-Pandonia Global Network
+## 2) Mapa Interativo
+**Objetivo:** mostrar qualidade do ar em diferentes locais.
 
-Como se conectar (na prática)
-A) Baixar dados diretamente (HTTP, sem token)
+**Dados a usar:** AQI_Final, Cidade (+ Temperatura_C opcional no popup).
 
-O acesso às pastas é público — basta fazer HTTP GET ao arquivo desejado.
+**Como usar:**
+- Coloque **dois pinos**: um para **Nova Iorque** e outro para **Sedona**.
+- Para cada cidade, use o AQI “de hoje” (primeira linha daquela cidade) para definir a **cor do pino** (cor da categoria AQI).
+- Ao **clicar no pino**, abrir popup com:
+  - AQI_Final de hoje
+  - Categoria textual (ex.: “Moderado”)
+  - **Talvez** Temperatura_C (incluir se a coluna existir na linha de hoje).
 
-Exemplo (baixar um arquivo L2 de Atlanta Downtown):
+---
 
-curl -LO "https://data.hetzner.pandonia-global-network.org/AtlantaGA-Downtown/Pandora92s1/L2/Pandora92s1_AtlantaGA-Downtown_L2_rout2p1-8.txt"
+## 3) Previsão de Qualidade do Ar
+**Objetivo:** indicar ao usuário o que esperar no curto prazo.
 
+**Dados a usar:** AQI_Final e Data.
 
-Esse caminho demonstra a estrutura /Local/PandoraNNsX/Nível/ e nomes coerentes com os produtos L2 descritos na página “Versions”. 
-Hetzner Pandonia Global Network
-+1
+**Como usar:**
+- Para simular a previsão, pegue os dados dos **próximos 3 dias** no CSV (Hoje, Amanhã, Depois de Amanhã).
+- **Gráfico de linha simples** (eixo X: Hoje/Amanhã/Depois; eixo Y: AQI_Final).
+- Tooltip com Data e valor do AQI.
+- Use a mesma escala/categorias para interpretação visual (sem mudar estrutura).
 
-Dica: percorra o índice do diretório do seu local de interesse (por exemplo, /AtlantaGA-Downtown/ → Pandora92s1/ → L2/) e baixe os arquivos necessários. 
-Hetzner Pandonia Global Network
+---
 
-B) Usar a API programática (FastAPI)
+## 4) Gráficos de Tendências Históricas
+**Objetivo:** explorar o passado.
 
-A documentação interativa Swagger UI do backend LuftBlick mostra:
+**Dados a usar:** AQI_Final, Precipitacao_mm, Temperatura_C, Data.
 
-POST /token – em geral, retorna um access token (Bearer) após autenticação.
+**Como usar:**
+- Monte um **gráfico de linha** com a evolução do **AQI_Final nos últimos 30 dias** (pegar 30 linhas do CSV para a cidade corrente, se aplicável).
+- Adicione **botões/alternadores** para o usuário **adicionar/remover** séries adicionais no mesmo gráfico:
+  - Precipitacao_mm
+  - Temperatura_C
+- Quando acionadas, as novas séries aparecem como linhas adicionais, permitindo ao usuário observar correlações (ex.: pico de chuva seguido de queda no AQI).
 
-GET /files – lista de arquivos/paths disponíveis (útil para automação).
+---
 
-POST /query/get_day – consulta dados agregados de um dia (há uma operação “Get BlickV Data Compressed”). 
-FastAPI Pandonia
+## 5) Tela de Validação (Satélite vs. Solo)
+**Objetivo:** demonstrar integração e validação entre fontes.
 
-Observação: por expor POST /token, essa API normalmente requer credenciais (conta de usuário PGN). Se você não tiver acesso, utilize o repositório HTTP aberto.
+**Dados a usar:** Concentracao_PM2.5_Solo (dado terrestre) e AOD_Satelite_MODIS (dado satélite).
 
-Fluxo típico (curl):
+**Origem dos dados (obrigatória):**
+- **Via API interna**, que **lê diretamente** o arquivo **`airsentinel-api\data\dados_completos_NASA_aqi.csv`**.
+- A API deve retornar, no mínimo, para os últimos 30 dias: **Data**, **Concentracao_PM2.5_Solo**, **AOD_Satelite_MODIS**. (Formato livre: JSON/CSV, contanto que seja consumido pela UI. Não mudar a fonte nem o caminho.)
+- Não utilizar outras fontes para esta aba.
 
-# 1) Obter token (confira no Swagger se o body é form-encoded: username/password)
-curl -s -X POST \
-     -H "Content-Type: application/x-www-form-urlencoded" \
-     -d "username=SEU_USUARIO&password=SUA_SENHA" \
-     "https://fastapi.hetzner.pandonia-global-network.org/token"
-# -> guarde o valor em .access_token
+**Como usar:**
+- Crie um **gráfico com duas linhas** para os **últimos 30 dias**:
+  - Linha 1: Concentracao_PM2.5_Solo
+  - Linha 2: AOD_Satelite_MODIS
+- **Título do gráfico:** “Validação: Medições de Poluição do Solo vs. Satélite”.
+- Legenda clara; eixo X = Data; eixo Y = valor da métrica respectiva.
 
-# 2) Listar arquivos via API
-curl -s -H "Authorization: Bearer SEU_TOKEN" \
-     "https://fastapi.hetzner.pandonia-global-network.org/files"
+---
 
-# 3) Consultar um dia (verifique o schema no Swagger para os campos exatos)
-curl -s -X POST -H "Authorization: Bearer SEU_TOKEN" \
-     -H "Content-Type: application/json" \
-     -d '{"site":"AtlantaGA-Downtown","instrument":"Pandora92s1","date":"2025-09-23"}' \
-     "https://fastapi.hetzner.pandonia-global-network.org/query/get_day"
+## 6) Alertas de Saúde
+**Objetivo:** tornar a informação acionável.
 
+**Dados a usar:** AQI_Final.
 
-Os formatos de request/response, nomes de campos e filtros estão na Swagger UI do backend LuftBlick, indicada acima. 
-FastAPI Pandonia
+**Como usar:**
+- Regra simples: **SE AQI_Final > 100** (para “hoje”, cidade corrente).
+- Se verdadeiro, mostrar **banner no topo da página** com a mensagem:
+  “Alerta de Saúde: A qualidade do ar hoje pode ser prejudicial para grupos sensíveis. Considere limitar atividades físicas intensas ao ar livre.”
+- O banner deve usar a **cor da categoria AQI** correspondente ao valor de hoje.
 
-O que usar quando?
+---
 
-Automação simples / ETL em lote: prefira o repositório HTTP (é público e estável). Liste pastas, aplique filtros por data/arquivo e baixe. 
-Pandonia Global Network Data
-
-Exploração/visualização rápida ou consultas por intervalo/dia com pré-agrupamentos do BlickV: use a API FastAPI (se tiver credenciais). 
-FastAPI Pandonia
-
-Entendimento do conteúdo dos arquivos: consulte o Readme PGN (definições de variáveis, qualidade, nomenclatura de produtos como nvs0, out0, etc.). 
-Pandonia Global Network
-+1
-
-Referências diretas que conferi
-
-Página “Availability” do Pandora → link oficial para o PGN Data. 
-Pandora
-
-Índice do repositório PGN (público, navegável). 
-Pandonia Global Network Data
-
-Exemplo real de L2 em AtlantaGA-Downtown/Pandora92s1/L2/. 
-Hetzner Pandonia Global Network
-+1
-
-Página “Versions” do Pandora (tabela de produtos/nomes). 
-Pandora
-
-Backend LuftBlick FastAPI (Swagger UI com /token, /files, /query/get_day). 
-FastAPI Pandonia
-
-Readme de Produtos PGN (jan/2025). 
-Pandonia Global Network
-
-Página inicial da PGN com links para BlickV/BlickM. 
-Pandonia Global Network
-
-Se quiser, eu já te deixo um scriptzinho (Python ou bash) para baixar automaticamente um intervalo de dias de um local/produto específico — é só dizer qual local (pasta), qual produto (ex.: nvs0, out0) e o período.
+### Critérios de aceitação (obrigatórios)
+- As **6 abas existem**, exatamente com os **títulos acima** e **na mesma ordem**.
+- A **Tela Principal** usa a **primeira linha** de **Nova Iorque** para “hoje”, mostra número grande, categoria textual e poluente dominante, com **cor de fundo** pela categoria.
+- O **Mapa** tem pinos de **Nova Iorque** e **Sedona** com **cores por AQI** e popup com AQI, categoria e (se houver) Temperatura_C.
+- A **Previsão** tem **3 pontos** (Hoje/Amanhã/Depois) em **gráfico de linha** de AQI.
+- As **Tendências** mostram **30 dias** de AQI e permitem **adicionar** Precipitacao_mm e Temperatura_C.
+- A **Validação**: **consome dados via API interna** a partir de **`airsentinel-api\data\dados_completos_NASA_aqi.csv`** e plota **duas linhas** (Solo vs. Satélite) em **30 dias** com o **título** especificado.
+- O **Alerta de Saúde** aparece quando **AQI_Final > 100**, com a **mensagem exata** informada.
+- **Não alterar** a estrutura solicitada (nomes, ordem, regras).

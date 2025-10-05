@@ -100,7 +100,7 @@ const AboutTeam = () => {
       <Card className={styles.card}>
         <CardContent className={styles.cardContent}>
           
-          <Grid container spacing={3}>
+          <Grid container spacing={3} className={styles.teamGrid}>
             {teamMembers.map((member, index) => (
               <Grid item xs={12} sm={6} md={3} key={member.id}>
                 <Box className={styles.teamMemberBox}>
