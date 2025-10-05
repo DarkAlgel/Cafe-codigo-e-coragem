@@ -1,0 +1,198 @@
+/* AboutTeam.module.css */
+
+.container {
+  padding: 32px 0;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 48px;
+}
+
+.headerBox {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+
+.headerIcon {
+  font-size: 48px;
+  color: #1976d2;
+  margin-right: 16px;
+}
+
+.headerTitle {
+  font-weight: bold;
+  color: #1976d2;
+}
+
+.headerSubtitle {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.card {
+  margin-bottom: 48px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.cardContent {
+  padding: 32px;
+}
+
+.sectionTitle {
+  display: flex;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.sectionIcon {
+  margin-right: 16px;
+  color: #1976d2;
+}
+
+.teamMemberBox {
+  text-align: center;
+}
+
+.avatar {
+  width: 80px;
+  height: 80px;
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin: 0 auto 16px auto;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.avatarLuan {
+  border: 3px solid #1976d2;
+}
+
+.avatarLeonardo {
+  border: 3px solid #388e3c;
+}
+
+.avatarGabriel {
+  border: 3px solid #f57c00;
+}
+
+.avatarFernando {
+  border: 3px solid #7b1fa2;
+}
+
+.memberName {
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+.chipLuan {
+  background-color: #1976d2;
+  color: white;
+  font-weight: bold;
+}
+
+.chipLeonardo {
+  background-color: #388e3c;
+  color: white;
+  font-weight: bold;
+}
+
+.chipGabriel {
+  background-color: #f57c00;
+  color: white;
+  font-weight: bold;
+}
+
+.chipFernando {
+  background-color: #7b1fa2;
+  color: white;
+  font-weight: bold;
+}
+
+.summaryText {
+  font-size: 1.1rem;
+  line-height: 1.8;
+  margin-bottom: 24px;
+}
+
+.summaryTextLast {
+  font-size: 1.1rem;
+  line-height: 1.8;
+}
+
+.projectDetailsText {
+  font-size: 1.1rem;
+  line-height: 1.8;
+  margin-bottom: 32px;
+}
+
+.featurePaper {
+  padding: 24px;
+  height: 100%;
+  text-align: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.featureIconBox {
+  margin-bottom: 16px;
+}
+
+.featureTitle {
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+.footer {
+  width: 100%;
+  background-color: #f5f5f5;
+  border-top: 1px solid #e0e0e0;
+  text-align: center;
+  padding: 32px 0;
+  margin-top: 32px;
+}
+
+.footerDivider {
+  margin-bottom: 24px;
+}
+
+.footerButtonBox {
+  margin-bottom: 24px;
+}
+
+.footerButton {
+  background-color: #1976d2;
+  color: white;
+  font-weight: bold;
+  padding: 12px 32px;
+  border-radius: 24px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.footerButton:hover {
+  background-color: #1565c0;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
+}
+
+/* Ícones das features */
+.featureIconScience {
+  font-size: 40px;
+  color: #1976d2;
+}
+
+.featureIconAnalytics {
+  font-size: 40px;
+  color: #388e3c;
+}
+
+.featureIconCloud {
+  font-size: 40px;
+  color: #f57c00;
+}
+
+.featureIconTrending {
+  font-size: 40px;
+  color: #7b1fa2;
+}

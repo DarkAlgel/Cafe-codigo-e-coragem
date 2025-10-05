@@ -50,7 +50,7 @@ const OpenAQData = ({ location, refreshTrigger }) => {
     setError(null);
 
     try {
-      const result = await openaqService.getLatest(location.latitude, location.longitude);
+      const result = await fetchOpenAQData(location.latitude, location.longitude);
       setData(result);
       setLastUpdated(new Date());
     } catch (err) {
