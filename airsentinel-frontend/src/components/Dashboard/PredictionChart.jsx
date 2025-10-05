@@ -21,13 +21,13 @@ import {
   ReferenceLine
 } from 'recharts';
 import { format } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
+import { enUS } from 'date-fns/locale';
 
 const PredictionChart = ({ 
   data = [], 
   loading = false, 
   error = null,
-  title = "Previsão de Qualidade do Ar",
+  title = "Air Quality Forecast",
   height = 300,
   showArea = true,
   showReferenceLine = true
@@ -49,7 +49,7 @@ const PredictionChart = ({
     return (
       <Card sx={{ height: height + 100 }}>
         <CardContent sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
-          <Typography color="error">Erro ao carregar previsões</Typography>
+          <Typography color="error">Error loading forecasts</Typography>
         </CardContent>
       </Card>
     );
@@ -59,7 +59,7 @@ const PredictionChart = ({
     return (
       <Card sx={{ height: height + 100 }}>
         <CardContent sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
-          <Typography color="textSecondary">Dados de previsão não disponíveis</Typography>
+          <Typography color="textSecondary">Forecast data not available</Typography>
         </CardContent>
       </Card>
     );
@@ -77,7 +77,7 @@ const PredictionChart = ({
   const formatTooltipLabel = (label) => {
     try {
       const date = new Date(label);
-      return format(date, isMobile ? 'dd/MM HH:mm' : 'dd/MM/yyyy HH:mm', { locale: ptBR });
+      return format(date, isMobile ? 'MM/dd HH:mm' : 'MM/dd/yyyy HH:mm', { locale: enUS });
     } catch {
       return label;
     }
@@ -86,7 +86,7 @@ const PredictionChart = ({
   const formatXAxisLabel = (tickItem) => {
     try {
       const date = new Date(tickItem);
-      return format(date, isMobile ? 'HH:mm' : 'dd/MM HH:mm', { locale: ptBR });
+      return format(date, isMobile ? 'HH:mm' : 'MM/dd HH:mm', { locale: enUS });
     } catch {
       return tickItem;
     }
@@ -109,16 +109,16 @@ const PredictionChart = ({
             {formatTooltipLabel(label)}
           </Typography>
           <Typography variant="body2" sx={{ color: getAQIColor(data.aqi) }}>
-            IQA: {data.aqi}
+            AQI: {data.aqi}
           </Typography>
           {data.confidence && (
             <Typography variant="caption" color="textSecondary">
-              Confiança: {(data.confidence * 100).toFixed(1)}%
+              Confidence: {(data.confidence * 100).toFixed(1)}%
             </Typography>
           )}
           {data.mainPollutant && (
             <Typography variant="caption" color="textSecondary" sx={{ display: 'block' }}>
-              Principal: {data.mainPollutant}
+              Main: {data.mainPollutant}
             </Typography>
           )}
         </Box>
@@ -184,13 +184,13 @@ const PredictionChart = ({
           </ResponsiveContainer>
         </Box>
 
-        {/* Legenda */}
+        {/* Legend */}
         <Box sx={{ mt: 2, display: 'flex', flexWrap: 'wrap', gap: 2, justifyContent: 'center' }}>
           {[
-            { range: '0-50', label: 'Boa', color: '#4CAF50' },
-            { range: '51-100', label: 'Moderada', color: '#FFEB3B' },
-            { range: '101-150', label: 'Insalubre p/ sensíveis', color: '#FF9800' },
-            { range: '151-200', label: 'Insalubre', color: '#F44336' },
+            { range: '0-50', label: 'Good', color: '#4CAF50' },
+            { range: '51-100', label: 'Moderate', color: '#FFEB3B' },
+            { range: '101-150', label: 'Unhealthy for Sensitive', color: '#FF9800' },
+            { range: '151-200', label: 'Unhealthy', color: '#F44336' },
           ].map((item) => (
             <Box key={item.range} sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
               <Box

@@ -5,7 +5,8 @@ import {
   CardContent,
   Typography,
   Grid,
-  useTheme
+  useTheme,
+  useMediaQuery
 } from '@mui/material';
 import {
   LineChart,
@@ -218,21 +219,21 @@ const AirQualityForecast = ({ csvData }) => {
           </Grid>
         </Grid>
 
-        {/* Legenda das categorias */}
+        {/* AQI Categories Legend */}
         <Grid item xs={12}>
           <Card>
             <CardContent>
               <Typography variant="h6" gutterBottom>
-                Categorias AQI
+                AQI Categories
               </Typography>
               <Grid container spacing={2}>
                 {[
-                  { range: '0-50', label: 'Bom', color: '#4CAF50' },
-                  { range: '51-100', label: 'Moderado', color: '#FFEB3B' },
-                  { range: '101-150', label: 'Insalubre p/ grupos sensíveis', color: '#FF9800' },
-                  { range: '151-200', label: 'Insalubre', color: '#F44336' },
-                  { range: '201-300', label: 'Muito insalubre', color: '#9C27B0' },
-                  { range: '301+', label: 'Perigoso', color: '#800020' }
+                  { range: '0-50', label: 'Good', color: '#4CAF50' },
+                  { range: '51-100', label: 'Moderate', color: '#FFEB3B' },
+                  { range: '101-150', label: 'Unhealthy for Sensitive Groups', color: '#FF9800' },
+                  { range: '151-200', label: 'Unhealthy', color: '#F44336' },
+                  { range: '201-300', label: 'Very Unhealthy', color: '#9C27B0' },
+                  { range: '301+', label: 'Hazardous', color: '#800020' }
                 ].map((item, index) => (
                   <Grid item xs={12} sm={6} md={4} key={index}>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>

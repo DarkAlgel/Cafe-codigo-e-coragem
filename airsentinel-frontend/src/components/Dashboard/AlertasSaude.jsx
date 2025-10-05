@@ -9,7 +9,7 @@ import { Warning } from '@mui/icons-material';
 import { getTodayDataForCity, getAQICategory, shouldShowHealthAlert } from '../../utils/csvLoader';
 
 const AlertasSaude = ({ csvData }) => {
-  // Obter dados de "hoje" para Nova Iorque (cidade corrente)
+  // Get today's data for New York (current city)
   const todayData = useMemo(() => {
     return getTodayDataForCity(csvData, 'Nova Iorque') || 
            getTodayDataForCity(csvData, 'New York') ||
@@ -55,7 +55,7 @@ const AlertasSaude = ({ csvData }) => {
                 mb: 1
               }}
             >
-              Alerta de Saúde
+              Health Alert
             </Typography>
             <Typography
               variant="body1"
@@ -64,8 +64,8 @@ const AlertasSaude = ({ csvData }) => {
                 lineHeight: 1.6
               }}
             >
-              A qualidade do ar hoje pode ser prejudicial para grupos sensíveis. 
-              Considere limitar atividades físicas intensas ao ar livre.
+              Today's air quality may be harmful to sensitive groups. 
+              Consider limiting intense outdoor physical activities.
             </Typography>
             <Typography
               variant="body2"
@@ -75,7 +75,7 @@ const AlertasSaude = ({ csvData }) => {
                 fontStyle: 'italic'
               }}
             >
-              AQI atual: {aqi} - {getAQICategory(aqi).category}
+              Current AQI: {aqi} - {getAQICategory(aqi).category}
             </Typography>
           </Box>
         </Alert>

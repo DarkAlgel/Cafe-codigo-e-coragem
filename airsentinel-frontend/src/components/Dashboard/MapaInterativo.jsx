@@ -365,7 +365,7 @@ const MapaInterativo = ({ csvData }) => {
         <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
           <Typography variant="h6" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
             <TuneRounded />
-            Filtros Avançados
+            Advanced Filters
           </Typography>
           <IconButton size="small" onClick={toggleFilters}>
             <Close />
@@ -378,7 +378,7 @@ const MapaInterativo = ({ csvData }) => {
         <Box sx={{ mb: 3 }}>
           <Typography variant="subtitle2" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
             <AirRounded fontSize="small" />
-            Faixa de AQI
+            AQI Range
           </Typography>
           <Slider
             value={filters.aqiRange}
@@ -404,10 +404,11 @@ const MapaInterativo = ({ csvData }) => {
 
         <Divider sx={{ mb: 2 }} />
 
-        {/* Filtros por categoria */}
+        {/* Air Quality Categories */}
         <Box sx={{ mb: 3 }}>
-          <Typography variant="subtitle2" gutterBottom>
-            Categorias de Qualidade do Ar
+          <Typography variant="subtitle2" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <FilterList fontSize="small" />
+            Air Quality Categories
           </Typography>
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
             <FormControlLabel
@@ -421,7 +422,7 @@ const MapaInterativo = ({ csvData }) => {
               label={
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                   <Box sx={{ width: 12, height: 12, borderRadius: '50%', backgroundColor: '#4CAF50' }} />
-                  Bom (0-50)
+                  Good (0-50)
                 </Box>
               }
             />
@@ -436,7 +437,7 @@ const MapaInterativo = ({ csvData }) => {
               label={
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                   <Box sx={{ width: 12, height: 12, borderRadius: '50%', backgroundColor: '#FFEB3B' }} />
-                  Moderado (51-100)
+                  Moderate (51-100)
                 </Box>
               }
             />
@@ -451,7 +452,7 @@ const MapaInterativo = ({ csvData }) => {
               label={
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                   <Box sx={{ width: 12, height: 12, borderRadius: '50%', backgroundColor: '#FF9800' }} />
-                  Insalubre (101-200)
+                  Unhealthy (101-200)
                 </Box>
               }
             />
@@ -466,7 +467,7 @@ const MapaInterativo = ({ csvData }) => {
               label={
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                   <Box sx={{ width: 12, height: 12, borderRadius: '50%', backgroundColor: '#9C27B0' }} />
-                  Perigoso (201+)
+                  Hazardous (201+)
                 </Box>
               }
             />
@@ -475,11 +476,11 @@ const MapaInterativo = ({ csvData }) => {
 
         <Divider sx={{ mb: 2 }} />
 
-        {/* Controles de camada */}
+        {/* Layer Controls */}
         <Box sx={{ mb: 3 }}>
           <Typography variant="subtitle2" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
             <Layers fontSize="small" />
-            Controles de Camada
+            Layer Controls
           </Typography>
           <Box sx={{ mt: 2 }}>
             <Typography variant="body2" gutterBottom>
@@ -511,8 +512,8 @@ const MapaInterativo = ({ csvData }) => {
 
   return (
     <Box sx={{ py: 2, width: '100%' }}>
-      <Typography variant="h4" gutterBottom sx={{ textAlign: 'center', mb: 4, fontWeight: 600 }}>
-        Mapa Interativo de Qualidade do Ar - Região de Nova York
+      <Typography variant="h4" gutterBottom sx={{ fontWeight: 600, textAlign: 'center', mb: 4 }}>
+        Interactive Air Quality Map - New York Region
       </Typography>
 
       <Grid container spacing={3} justifyContent="center">
@@ -642,14 +643,14 @@ const MapaInterativo = ({ csvData }) => {
                   }}
                 >
                   <Typography variant="subtitle2" sx={{ fontWeight: 600, mb: 1.5 }}>
-                    Índice de Qualidade do Ar (AQI)
+                    Air Quality Index (AQI)
                   </Typography>
                   {[
-                    { range: '0-50', label: 'Bom', color: '#4CAF50' },
-                    { range: '51-100', label: 'Moderado', color: '#FFEB3B' },
-                    { range: '101-150', label: 'Insalubre p/ Sensíveis', color: '#FF9800' },
-                    { range: '151-200', label: 'Insalubre', color: '#F44336' },
-                    { range: '201+', label: 'Muito Insalubre', color: '#9C27B0' }
+                    { range: '0-50', label: 'Good', color: '#4CAF50' },
+                    { range: '51-100', label: 'Moderate', color: '#FFEB3B' },
+                    { range: '101-150', label: 'Unhealthy for Sensitive', color: '#FF9800' },
+                    { range: '151-200', label: 'Unhealthy', color: '#F44336' },
+                    { range: '201+', label: 'Very Unhealthy', color: '#9C27B0' }
                   ].map((item, index) => (
                     <Box key={index} sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
                       <Box
@@ -669,7 +670,7 @@ const MapaInterativo = ({ csvData }) => {
                   ))}
                   <Box sx={{ mt: 2, pt: 1, borderTop: '1px solid rgba(0,0,0,0.1)' }}>
                     <Typography variant="caption" sx={{ fontSize: '0.7rem', color: 'text.secondary' }}>
-                      Clique em qualquer localização para informações detalhadas
+                      Click on any location for detailed information
                     </Typography>
                   </Box>
                 </Box>
@@ -694,7 +695,7 @@ const MapaInterativo = ({ csvData }) => {
                 <Typography variant="h6">{selectedCity.name}</Typography>
                 <Typography variant="caption" color="text.secondary">
                   {selectedCity.type === 'major' ? 'Cidade Principal' : 
-                   selectedCity.type === 'district' ? 'Distrito/Bairro' : 'Localização de Referência'}
+                   selectedCity.type === 'district' ? 'District/Neighborhood' : 'Reference Location'}
                 </Typography>
               </Box>
             </DialogTitle>
@@ -723,7 +724,7 @@ const MapaInterativo = ({ csvData }) => {
                         {getAQICategory(selectedCity.aqi || selectedCity.data?.AQI_Final).category}
                       </Typography>
                       <Typography variant="body2" color="text.secondary">
-                        Índice de Qualidade do Ar
+                        Air Quality Index
                       </Typography>
                     </CardContent>
                   </Card>
@@ -741,7 +742,7 @@ const MapaInterativo = ({ csvData }) => {
                           <CardContent sx={{ textAlign: 'center', py: 2 }}>
                             <Thermostat color="primary" sx={{ fontSize: 32, mb: 1 }} />
                             <Typography variant="body2" color="text.secondary">
-                              Temperatura
+                              Temperature
                             </Typography>
                             <Typography variant="h6">
                               {selectedCity.data.Temperatura_C}°C
@@ -755,7 +756,7 @@ const MapaInterativo = ({ csvData }) => {
                       <Card>
                         <CardContent sx={{ textAlign: 'center', py: 2 }}>
                           <Typography variant="body2" color="text.secondary">
-                            Poluente Dominante
+                            Dominant Pollutant
                           </Typography>
                           <Typography variant="h6">
                             {selectedCity.data?.Poluente_Dominante || 'N/A'}
@@ -776,7 +777,7 @@ const MapaInterativo = ({ csvData }) => {
                       <Grid container spacing={2}>
                         <Grid item xs={12} sm={6}>
                           <Typography variant="body2" color="text.secondary">
-                            Data da Medição
+                            Measurement Date
                           </Typography>
                           <Typography variant="body1">
                             {selectedCity.data?.Data || 'Atual'}

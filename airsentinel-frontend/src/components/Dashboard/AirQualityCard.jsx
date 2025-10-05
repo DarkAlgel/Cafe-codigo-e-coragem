@@ -30,7 +30,7 @@ const AirQualityCard = ({
   if (error) {
     return (
       <Card sx={{ height: compact ? 200 : 280, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <Typography color="error">Erro ao carregar dados</Typography>
+        <Typography color="error">Error loading data</Typography>
       </Card>
     );
   }
@@ -38,27 +38,27 @@ const AirQualityCard = ({
   if (!data) {
     return (
       <Card sx={{ height: compact ? 200 : 280, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <Typography color="textSecondary">Dados não disponíveis</Typography>
+        <Typography color="textSecondary">Data not available</Typography>
       </Card>
     );
   }
 
   const getAQIColor = (aqi) => {
-    if (aqi <= 50) return '#4CAF50'; // Bom - Verde
-    if (aqi <= 100) return '#FFEB3B'; // Moderado - Amarelo
-    if (aqi <= 150) return '#FF9800'; // Insalubre para grupos sensíveis - Laranja
-    if (aqi <= 200) return '#F44336'; // Insalubre - Vermelho
-    if (aqi <= 300) return '#9C27B0'; // Muito insalubre - Roxo
-    return '#8D6E63'; // Perigoso - Marrom
+    if (aqi <= 50) return '#4CAF50'; // Good - Green
+    if (aqi <= 100) return '#FFEB3B'; // Moderate - Yellow
+    if (aqi <= 150) return '#FF9800'; // Unhealthy for sensitive groups - Orange
+    if (aqi <= 200) return '#F44336'; // Unhealthy - Red
+    if (aqi <= 300) return '#9C27B0'; // Very unhealthy - Purple
+    return '#8D6E63'; // Hazardous - Brown
   };
 
   const getAQILabel = (aqi) => {
-    if (aqi <= 50) return 'Boa';
-    if (aqi <= 100) return 'Moderada';
-    if (aqi <= 150) return 'Insalubre para grupos sensíveis';
-    if (aqi <= 200) return 'Insalubre';
-    if (aqi <= 300) return 'Muito insalubre';
-    return 'Perigosa';
+    if (aqi <= 50) return 'Good';
+    if (aqi <= 100) return 'Moderate';
+    if (aqi <= 150) return 'Unhealthy for Sensitive Groups';
+    if (aqi <= 200) return 'Unhealthy';
+    if (aqi <= 300) return 'Very Unhealthy';
+    return 'Hazardous';
   };
 
   const getTrendIcon = (trend) => {
@@ -84,7 +84,7 @@ const AirQualityCard = ({
         {/* Header */}
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
           <Typography variant={compact ? "subtitle1" : "h6"} fontWeight="bold" color="textPrimary">
-            {data.location || 'Qualidade do Ar'}
+            {data.location || 'Air Quality'}
           </Typography>
           {showTrend && data.trend !== undefined && (
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
@@ -96,7 +96,7 @@ const AirQualityCard = ({
           )}
         </Box>
 
-        {/* AQI Principal */}
+        {/* Main AQI */}
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
           <Box
             sx={{
@@ -117,7 +117,7 @@ const AirQualityCard = ({
           </Box>
           <Box>
             <Typography variant={compact ? "body2" : "body1"} color="textSecondary">
-              IQA
+              AQI
             </Typography>
             <Chip
               label={aqiLabel}
@@ -132,11 +132,11 @@ const AirQualityCard = ({
           </Box>
         </Box>
 
-        {/* Detalhes dos poluentes */}
+        {/* Pollutant details */}
         {!compact && data.pollutants && (
           <Box sx={{ mt: 'auto' }}>
             <Typography variant="caption" color="textSecondary" sx={{ mb: 1, display: 'block' }}>
-              Principais poluentes:
+              Main pollutants:
             </Typography>
             <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
               {Object.entries(data.pollutants).slice(0, 3).map(([key, value]) => (
@@ -163,7 +163,7 @@ const AirQualityCard = ({
               fontSize: '0.7rem'
             }}
           >
-            Atualizado: {new Date(data.timestamp).toLocaleTimeString('pt-BR')}
+            Updated: {new Date(data.timestamp).toLocaleTimeString('en-US')}
           </Typography>
         )}
       </CardContent>
