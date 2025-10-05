@@ -21,7 +21,6 @@ import {
 import TelaPrincipal from './TelaPrincipal';
 import MapaInterativo from './MapaInterativo';
 import AirQualityForecast from './PrevisaoQualidadeAr';
-import HistoricalTrendsCharts from './GraficosTendencias';
 import ValidationScreen from './TelaValidacao';
 import AlertasSaude from './AlertasSaude';
 import CitySearchBar from './CitySearchBar';
@@ -108,19 +107,9 @@ const TabsDashboard = () => {
       component: AirQualityForecast
     },
     {
-      label: 'Historical Trends Charts',
-      icon: <Analytics />,
-      component: HistoricalTrendsCharts
-    },
-    {
       label: 'Validation Screen (Satellite vs. Ground)',
       icon: <Satellite />,
       component: ValidationScreen
-    },
-    {
-      label: 'Health Alerts',
-      icon: <HealthAndSafety />,
-      component: AlertasSaude
     }
   ];
 
