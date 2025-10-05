@@ -1,0 +1,119 @@
+Perfeito — vasculhei o site do Pandora da NASA e os links oficiais que ele fornece. O próprio site não expõe uma API própria; ele aponta para a Pandonia Global Network (PGN), onde há (1) um repositório HTTP aberto com os arquivos de dados e (2) uma API programática (FastAPI) usada pelos visores BlickV/BlickM.
+
+Onde estão os dados e APIs
+
+Repositório aberto de arquivos (HTTP) – PGN Data
+
+O site do Pandora indica explicitamente que “os dados dos instrumentos PGN podem ser acessados em data.pandonia-global-network.org”. 
+Pandora
+
+Esse endereço serve pastas navegáveis por localidade e por nível (L0/L1/L2/L2Fit). Ex.: /AtlantaGA-Downtown/Pandora92s1/L2/ com arquivos .txt de produtos L2. 
+Pandonia Global Network Data
++2
+Hetzner Pandonia Global Network
++2
+
+A própria página “Versions” do Pandora explica as siglas dos produtos (ex.: nvs0 = NO₂ coluna total, out0 = O₃ coluna total etc.), úteis para identificar os arquivos. 
+Pandora
+
+API programática – LuftBlick Backend (FastAPI)
+
+A infraestrutura da PGN disponibiliza uma Swagger UI pública do backend “LuftBlick” (ambiente Hetzner). A página lista endpoints como POST /token (autenticação), GET /files (lista de arquivos) e POST /query/get_day (consulta de um dia, com opção “Get BlickV Data Compressed”). 
+FastAPI Pandonia
+
+No site da PGN você também encontra os links para BlickV (visualização) e BlickM (mapa), que consomem esses serviços. 
+Pandonia Global Network
+
+Para entender o formato dos arquivos/variáveis (colunas, flags, produtos), use o “PGN Data Products Readme” mais recente (jan/2025). 
+Pandonia Global Network
+
+Como se conectar (na prática)
+A) Baixar dados diretamente (HTTP, sem token)
+
+O acesso às pastas é público — basta fazer HTTP GET ao arquivo desejado.
+
+Exemplo (baixar um arquivo L2 de Atlanta Downtown):
+
+curl -LO "https://data.hetzner.pandonia-global-network.org/AtlantaGA-Downtown/Pandora92s1/L2/Pandora92s1_AtlantaGA-Downtown_L2_rout2p1-8.txt"
+
+
+Esse caminho demonstra a estrutura /Local/PandoraNNsX/Nível/ e nomes coerentes com os produtos L2 descritos na página “Versions”. 
+Hetzner Pandonia Global Network
++1
+
+Dica: percorra o índice do diretório do seu local de interesse (por exemplo, /AtlantaGA-Downtown/ → Pandora92s1/ → L2/) e baixe os arquivos necessários. 
+Hetzner Pandonia Global Network
+
+B) Usar a API programática (FastAPI)
+
+A documentação interativa Swagger UI do backend LuftBlick mostra:
+
+POST /token – em geral, retorna um access token (Bearer) após autenticação.
+
+GET /files – lista de arquivos/paths disponíveis (útil para automação).
+
+POST /query/get_day – consulta dados agregados de um dia (há uma operação “Get BlickV Data Compressed”). 
+FastAPI Pandonia
+
+Observação: por expor POST /token, essa API normalmente requer credenciais (conta de usuário PGN). Se você não tiver acesso, utilize o repositório HTTP aberto.
+
+Fluxo típico (curl):
+
+# 1) Obter token (confira no Swagger se o body é form-encoded: username/password)
+curl -s -X POST \
+     -H "Content-Type: application/x-www-form-urlencoded" \
+     -d "username=SEU_USUARIO&password=SUA_SENHA" \
+     "https://fastapi.hetzner.pandonia-global-network.org/token"
+# -> guarde o valor em .access_token
+
+# 2) Listar arquivos via API
+curl -s -H "Authorization: Bearer SEU_TOKEN" \
+     "https://fastapi.hetzner.pandonia-global-network.org/files"
+
+# 3) Consultar um dia (verifique o schema no Swagger para os campos exatos)
+curl -s -X POST -H "Authorization: Bearer SEU_TOKEN" \
+     -H "Content-Type: application/json" \
+     -d '{"site":"AtlantaGA-Downtown","instrument":"Pandora92s1","date":"2025-09-23"}' \
+     "https://fastapi.hetzner.pandonia-global-network.org/query/get_day"
+
+
+Os formatos de request/response, nomes de campos e filtros estão na Swagger UI do backend LuftBlick, indicada acima. 
+FastAPI Pandonia
+
+O que usar quando?
+
+Automação simples / ETL em lote: prefira o repositório HTTP (é público e estável). Liste pastas, aplique filtros por data/arquivo e baixe. 
+Pandonia Global Network Data
+
+Exploração/visualização rápida ou consultas por intervalo/dia com pré-agrupamentos do BlickV: use a API FastAPI (se tiver credenciais). 
+FastAPI Pandonia
+
+Entendimento do conteúdo dos arquivos: consulte o Readme PGN (definições de variáveis, qualidade, nomenclatura de produtos como nvs0, out0, etc.). 
+Pandonia Global Network
++1
+
+Referências diretas que conferi
+
+Página “Availability” do Pandora → link oficial para o PGN Data. 
+Pandora
+
+Índice do repositório PGN (público, navegável). 
+Pandonia Global Network Data
+
+Exemplo real de L2 em AtlantaGA-Downtown/Pandora92s1/L2/. 
+Hetzner Pandonia Global Network
++1
+
+Página “Versions” do Pandora (tabela de produtos/nomes). 
+Pandora
+
+Backend LuftBlick FastAPI (Swagger UI com /token, /files, /query/get_day). 
+FastAPI Pandonia
+
+Readme de Produtos PGN (jan/2025). 
+Pandonia Global Network
+
+Página inicial da PGN com links para BlickV/BlickM. 
+Pandonia Global Network
+
+Se quiser, eu já te deixo um scriptzinho (Python ou bash) para baixar automaticamente um intervalo de dias de um local/produto específico — é só dizer qual local (pasta), qual produto (ex.: nvs0, out0) e o período.
