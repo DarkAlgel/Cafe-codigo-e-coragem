@@ -141,19 +141,45 @@ const TabsDashboard = () => {
   }
 
   return (
-    <Container maxWidth="xl">
-      <Box sx={{ width: '100%' }}>
+    <Container maxWidth="xl" sx={{ 
+      display: 'flex', 
+      flexDirection: 'column', 
+      alignItems: 'center',
+      justifyContent: 'center',
+      minHeight: '100vh',
+      py: 2
+    }}>
+      <Box sx={{ 
+        width: '100%', 
+        maxWidth: '1400px',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center'
+      }}>
         {/* Alertas de Saúde - Banner no topo */}
-        <AlertasSaude csvData={csvData} />
+        <Box sx={{ width: '100%', mb: 2 }}>
+          <AlertasSaude csvData={csvData} />
+        </Box>
         
         {/* City Search Bar - Above function tabs */}
-        <CitySearchBar 
-          selectedCity={selectedCity}
-          onCityChange={handleCityChange}
-        />
+        <Box sx={{ width: '100%', display: 'flex', justifyContent: 'center', mb: 2 }}>
+          <Box sx={{ width: '100%', maxWidth: '800px' }}>
+            <CitySearchBar 
+              selectedCity={selectedCity}
+              onCityChange={handleCityChange}
+            />
+          </Box>
+        </Box>
         
         {/* Navegação por abas */}
-        <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 2 }}>
+        <Box sx={{ 
+          width: '100%', 
+          borderBottom: 1, 
+          borderColor: 'divider', 
+          mb: 2,
+          display: 'flex',
+          justifyContent: 'center'
+        }}>
           <Tabs
             value={value}
             onChange={handleChange}
@@ -186,14 +212,24 @@ const TabsDashboard = () => {
         </Box>
 
         {/* Conteúdo das abas */}
-        {tabs.map((tab, index) => {
-          const Component = tab.component;
-          return (
-            <TabPanel key={index} value={value} index={index}>
-              <Component csvData={csvData} />
-            </TabPanel>
-          );
-        })}
+        <Box sx={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
+          {tabs.map((tab, index) => {
+            const Component = tab.component;
+            return (
+              <TabPanel key={index} value={value} index={index}>
+                <Box sx={{ 
+                  width: '100%', 
+                  display: 'flex', 
+                  flexDirection: 'column', 
+                  alignItems: 'center',
+                  px: { xs: 1, sm: 2 }
+                }}>
+                  <Component csvData={csvData} />
+                </Box>
+              </TabPanel>
+            );
+          })}
+        </Box>
       </Box>
     </Container>
   );
