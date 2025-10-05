@@ -6,6 +6,7 @@ import Navbar from './components/Layout/Navbar';
 import Footer from './components/Layout/Footer';
 import Dashboard from './pages/Dashboard';
 import AboutTeam from './pages/AboutTeam';
+import HealthPage from './pages/HealthPage';
 import './App.css';
 
 // Tema personalizado do Air Sentinel
@@ -134,12 +135,7 @@ const PredictionsPage = () => (
   </Box>
 );
 
-const HealthPage = () => (
-  <Box sx={{ p: 3 }}>
-    <h2>Saúde</h2>
-    <p>Página de recomendações de saúde em desenvolvimento...</p>
-  </Box>
-);
+
 
 const AlertsPage = () => (
   <Box sx={{ p: 3 }}>

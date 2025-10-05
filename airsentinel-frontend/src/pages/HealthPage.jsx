@@ -23,7 +23,7 @@ import {
   MonitorHeart,
   Shield,
   Air,
-  Eco,
+  Nature,
   Warning
 } from '@mui/icons-material';
 
@@ -31,39 +31,39 @@ const HealthPage = () => {
   const badAirActions = [
     {
       icon: <Home sx={{ color: '#4CAF50', fontSize: 28 }} />,
-      title: 'Permaneça em Ambientes Fechados',
-      description: 'Limite atividades ao ar livre, especialmente exercícios vigorosos, quando a qualidade do ar estiver ruim.'
+      title: 'Stay Indoors',
+      description: 'Limit outdoor activities, especially vigorous exercise, when air quality is poor.'
     },
     {
       icon: <Masks sx={{ color: '#2196F3', fontSize: 28 }} />,
-      title: 'Use Máscaras N95 ou KN95',
-      description: 'Feche janelas e use purificadores de ar HEPA em ambientes internos.'
+      title: 'Use N95 or KN95 Masks',
+      description: 'Close windows and use HEPA air purifiers indoors.'
     }
   ];
 
   const sensitiveGroups = [
     {
       icon: <FamilyRestroom sx={{ color: '#FF9800', fontSize: 28 }} />,
-      title: 'Crianças, Idosos e Gestantes',
-      description: 'Tome precauções extras, evite completamente a exposição ao ar livre em dias de má qualidade.'
+      title: 'Children, Elderly & Pregnant Individuals',
+      description: 'Take extra precautions, avoid outdoor exposure completely on poor air quality days.'
     },
     {
       icon: <MonitorHeart sx={{ color: '#F44336', fontSize: 28 }} />,
-      title: 'Pessoas com Condições Respiratórias/Cardíacas',
-      description: 'Consulte seu médico para um plano de ação pessoal e mantenha medicamentos à mão.'
+      title: 'Individuals with Respiratory/Heart Conditions',
+      description: 'Consult your doctor for a personal action plan and keep medication handy.'
     }
   ];
 
   const longTermStrategies = [
     {
       icon: <Air sx={{ color: '#4CAF50', fontSize: 28 }} />,
-      title: 'Monitore a Qualidade do Ar Regularmente',
-      description: 'Use o Air Sentinel para se manter informado sobre as condições locais.'
+      title: 'Monitor Air Quality Regularly',
+      description: 'Use Air Sentinel to stay informed about local conditions.'
     },
     {
-      icon: <Eco sx={{ color: '#4CAF50', fontSize: 28 }} />,
-      title: 'Promova o Ar Limpo',
-      description: 'Apoie iniciativas locais para ar mais limpo e reduza sua pegada de poluição pessoal.'
+      icon: <Nature sx={{ color: '#4CAF50', fontSize: 28 }} />,
+      title: 'Promote Clean Air',
+      description: 'Support local initiatives for cleaner air and reduce your personal pollution footprint.'
     }
   ];
 
@@ -85,11 +85,11 @@ const HealthPage = () => {
               WebkitTextFillColor: 'transparent'
             }}
           >
-            Protegendo Sua Saúde da Poluição do Ar
+            Protecting Your Health from Air Pollution
           </Typography>
         </Box>
         <Typography variant="h6" color="textSecondary" sx={{ maxWidth: 800, mx: 'auto' }}>
-          Informações essenciais e recomendações práticas para proteger você e sua família dos efeitos da poluição do ar
+          Essential information and practical recommendations to protect you and your family from the effects of air pollution
         </Typography>
       </Box>
 
@@ -97,9 +97,9 @@ const HealthPage = () => {
       <Card sx={{ mb: 4, borderLeft: '4px solid #4CAF50' }}>
         <CardContent>
           <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
-            <Eco sx={{ color: '#4CAF50', fontSize: 32, mr: 2 }} />
+            <Nature sx={{ color: '#4CAF50', fontSize: 32, mr: 2 }} />
             <Typography variant="h4" sx={{ fontWeight: 'bold', color: '#4CAF50' }}>
-              Ações para Dias de Má Qualidade do Ar
+              Actions to Take on Bad Air Days
             </Typography>
           </Box>
           
@@ -139,8 +139,8 @@ const HealthPage = () => {
 
           <Alert severity="warning" sx={{ mt: 3 }}>
             <Typography variant="body2">
-              <strong>Dica Importante:</strong> Mantenha-se informado sobre a qualidade do ar local através do Air Sentinel 
-              e planeje suas atividades de acordo com as condições atuais.
+              <strong>Important Tip:</strong> Stay informed about local air quality through Air Sentinel 
+              and plan your activities according to current conditions.
             </Typography>
           </Alert>
         </CardContent>
@@ -152,7 +152,7 @@ const HealthPage = () => {
           <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
             <FamilyRestroom sx={{ color: '#FF9800', fontSize: 32, mr: 2 }} />
             <Typography variant="h4" sx={{ fontWeight: 'bold', color: '#FF9800' }}>
-              Recomendações para Grupos Sensíveis
+              Recommendations for Sensitive Groups
             </Typography>
           </Box>
           
@@ -191,8 +191,8 @@ const HealthPage = () => {
 
           <Alert severity="info" sx={{ mt: 3 }}>
             <Typography variant="body2">
-              <strong>Atenção Especial:</strong> Pessoas com asma, DPOC, doenças cardíacas, crianças, idosos e gestantes 
-              devem ser especialmente cuidadosas durante períodos de má qualidade do ar.
+              <strong>Special Attention:</strong> People with asthma, COPD, heart disease, children, elderly and pregnant women 
+              should be especially careful during periods of poor air quality.
             </Typography>
           </Alert>
         </CardContent>
@@ -204,7 +204,7 @@ const HealthPage = () => {
           <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
             <Shield sx={{ color: '#2196F3', fontSize: 32, mr: 2 }} />
             <Typography variant="h4" sx={{ fontWeight: 'bold', color: '#2196F3' }}>
-              Estratégias de Saúde a Longo Prazo
+              Long-Term Health Strategies
             </Typography>
           </Box>
           
@@ -244,9 +244,9 @@ const HealthPage = () => {
 
           <Alert severity="success" sx={{ mt: 3 }}>
             <Typography variant="body2">
-              <strong>Benefício a Longo Prazo:</strong> Ao fornecer previsões de qualidade do ar, o Air Sentinel permite 
-              que você planeje atividades adequadamente - atletas podem agendar treinos e pessoas com condições respiratórias 
-              podem tomar precauções.
+              <strong>Long-Term Benefit:</strong> By providing air quality forecasts, Air Sentinel enables 
+              you to plan activities accordingly - athletes can schedule workouts and people with respiratory conditions 
+              can take precautions.
             </Typography>
           </Alert>
         </CardContent>
@@ -258,7 +258,7 @@ const HealthPage = () => {
           <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
             <Warning sx={{ color: '#4CAF50', fontSize: 32, mr: 2 }} />
             <Typography variant="h4" sx={{ fontWeight: 'bold', color: '#4CAF50' }}>
-              Dicas Adicionais de Saúde
+              Additional Health Tips
             </Typography>
           </Box>
           
@@ -268,8 +268,8 @@ const HealthPage = () => {
                 <DirectionsRun sx={{ color: '#4CAF50' }} />
               </ListItemIcon>
               <ListItemText 
-                primary="Exercite-se em Horários Adequados"
-                secondary="Prefira exercitar-se pela manhã cedo ou à noite, quando os níveis de poluição tendem a ser menores."
+                primary="Exercise at Appropriate Times"
+                secondary="Prefer exercising early in the morning or evening, when pollution levels tend to be lower."
               />
             </ListItem>
             
@@ -278,8 +278,8 @@ const HealthPage = () => {
                 <Home sx={{ color: '#2196F3' }} />
               </ListItemIcon>
               <ListItemText 
-                primary="Mantenha Ambientes Internos Limpos"
-                secondary="Use purificadores de ar, mantenha plantas que filtram o ar e evite fumar em ambientes fechados."
+                primary="Keep Indoor Environments Clean"
+                secondary="Use air purifiers, maintain air-filtering plants and avoid smoking in enclosed spaces."
               />
             </ListItem>
             
@@ -288,8 +288,8 @@ const HealthPage = () => {
                 <MonitorHeart sx={{ color: '#FF9800' }} />
               </ListItemIcon>
               <ListItemText 
-                primary="Monitore Sua Saúde"
-                secondary="Fique atento a sintomas como tosse, falta de ar ou irritação nos olhos, especialmente em dias de má qualidade do ar."
+                primary="Monitor Your Health"
+                secondary="Watch for symptoms like coughing, shortness of breath or eye irritation, especially on poor air quality days."
               />
             </ListItem>
           </List>

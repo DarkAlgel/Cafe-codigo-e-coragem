@@ -151,7 +151,7 @@ const TelaPrincipal = ({ csvData }) => {
     }}>
       <Box sx={{
         width: '80%',
-        maxWidth: '1400px',
+        maxWidth: '90%',
         minWidth: '320px'
       }}>
         <Grid container spacing={3} justifyContent="center">
